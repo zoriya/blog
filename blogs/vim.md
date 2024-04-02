@@ -16,6 +16,14 @@ So I just said that you should prefer powerful tools and I guess most of you thi
 
 ## Modal editing, the core idea of vim
 
+The first thing you will learn, probably painfully, in vim is that it is a modal editor. That means that when you type `u`, for example, it won't simply insert that character on tehe screen but instead will run the command `u` which is `undo` by default.
 
+You might think this is gimmicky at best but this right here is the most important thing about vim and that others editors can't simply reproduce. To understand why this behavior is important, you need to realise what you are doing in your editor is not **INSERTING text** but **EDITING it**. Most of the time, you will jump arround some text block and change a word for another for example. Most modern editors expect you to use combinations of `CTRL`, `SHIFT` and arrow keys. Vim on the other hands, created motions to handle this simply by a keypress.
+
+For example, If you want to delete the word your cursor is in, with vscode, intelij or zed, you'll probably do something like `CTRL SHIFT Right` to select the word to your right and then press backspace to delete it. If you were not at the begining but at the middle of the world, you'll probably do something like `CTRL Left` + `CTRL SHIFT Right` + `Backspace`. With vim, you simply type `dw` for `delete word` or `diw` for `delete inner word`.
+
+You might think learning vim is a daugting task with lots of commands to learn but it's surprisingly easier than you might think. Sure there is a few commands to learn but most of them are intuitive and most importantly, they chain together since most commands work with the framework `<action><motion>`. Action is what you want to do, for example `d` for delete, `v` for visual which means highlight, `y` for yank wich means copy... Motion is the text block you want to edit, for example `w` for word, `iw` for inner word, `Left` for the character on the left of your cursor and so on.
+
+Another great thing about vim bindings is it's ubiquity. Most editors (even non-editors like bash) have plugins for using those keybinds. This means if you want to use vim, you don't need to do much more than installing a plugin. Vim also has a great builtin way of learning it's binding called `vimtutor` which can be run on most unix systems (or from `git bash` if you are on windows).
 
 <!-- vim: wrap -->

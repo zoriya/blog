@@ -1,4 +1,10 @@
-# Vim features that IDE wish they could have
+---
+title: "Vim features that IDE wish they could have"
+description: ""
+date: 2024-04-03T11:41:18.979+0200
+draft: true
+tags: ["vim", "tools"]
+---
 
 This post is not here to convince you to use vim, but to show you what choices vim made 50 years ago that are still relevant today. Choices that bring benefits that moderns IDEs try to replicate the best they can with their own constraints. This post will also explain some points that make vim feels alien at first but might slowly become your favorite way of editing code.
 

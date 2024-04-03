@@ -1,0 +1,10 @@
+colorScheme = "sapphire"
+# enableSearch = true
+enableCodeCopy = true
+footer.showAppearanceSwitcher = true
+
+homepage.layout = "profile"
+homepage.showRecent = false
+
+article.showTableOfContents = true
+list.showSummary = false

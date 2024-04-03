@@ -1,0 +1,12 @@
+title = "Zoe's blog"
+
+[params.author]
+name = "Zoe Roux"
+image = "img/author.png"
+headline = "I'm not a dev, I'm a sorceress."
+bio = "A little bit about me"
+links = [
+	{ github = "https://github.com/zoriya" },
+	{ linkedin = "https://www.linkedin.com/in/zoe-roux/" },
+	{ twitter = "https://twitter.com/zoriya_dev" },
+]

@@ -1,0 +1,25 @@
+[[main]]
+  name = "Blogs"
+  pageRef = "blogs"
+  weight = 10
+
+[[main]]
+  name = "GitHub"
+  url = "https://github.com/zoriya"
+  weight = 30
+  [main.params]
+    icon = "github"
+    showName = false
+    target = "_blank"
+
+[[main]]
+  identifier = "search"
+  weight = 99
+  [main.params]
+    action = "search"
+    icon = "search"
+
+[[footer]]
+  name = "Tags"
+  pageRef = "tags"
+  weight = 20

@@ -1,0 +1,3 @@
+baseURL = 'https://zoriya.dev/'
+languageCode = 'en'
+paginate = 50

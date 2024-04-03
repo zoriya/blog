@@ -4,7 +4,6 @@ title = "Zoe's blog"
 name = "Zoe Roux"
 image = "img/author.png"
 headline = "I'm not a dev, I'm a sorceress."
-bio = "A little bit about me"
 links = [
 	{ github = "https://github.com/zoriya" },
 	{ linkedin = "https://www.linkedin.com/in/zoe-roux/" },

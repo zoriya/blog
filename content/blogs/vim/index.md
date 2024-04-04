@@ -50,6 +50,17 @@ This also means that for starting to use vim, you don't need to do much more tha
 You might think learning vim is a daunting task with lots of commands to learn, but it's surprisingly easier than you might think. Sure there are a few commands to learn but most of them are intuitive and most importantly, they chain together since most commands work with the framework `<action><motion>`. Action is what you want to do, for example <kbd>d</kbd> for delete, <kbd>v</kbd> for visual which means highlight, <kbd>y</kbd> for yank which means copy... Motion is the text block you want to edit, for example <kbd>w</kbd> for word, <kbd>iw</kbd> for inner word, <kbd>Left</kbd> for the character on the left of your cursor and so on.
 Vim also has a great built-in way of learning its binding called `vimtutor` which can be run on most Unix systems (or even from git bash if you are on windows).
 
-## 
+## A story about tabs
+
+### The classic
+
+In a traditional editor, you are probably used to have a few dozen tabs/file open. When you start having too much of them, how do you find back your file? For me this was a huge pain point for a while, I tried every possible workflow:
+ - Close a tab as soon as I finished with the file. This proved to be a bad method for me since I often jump around files a lot and find myself lost in my tabs before cleanup time.
+ - Use "Close other tabs" or "Close tabs on the right/left" features to simply close everything when there is too much. This was efficient after a small debug/coding time but I needed to use this during coding sessions a lot when writing bigger features.
+ - Embrace the "too much open" and use tabs on two lines, keep 3/4 most important/used tabs of the time pinned to find them quickly. I really liked having tabs pinned because it reduced the amount of time/mental strain needed to jump back to the most important files. Having items on two lines on the other hand was really bad, I needed twice as much time to look for the file I wanted to use before clicking on it.
+ - Abandon open tabs and rely on the file tree. Since I found it hard to search for the unorganized tabs, I thought maybe having them organised in a tree would help ; it was okay on small projects but when files were too nested or too many it was a nightmare to find them.
+
+### How vim deals with this?
+
 
 <!-- vim: wrap -->

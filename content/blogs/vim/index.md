@@ -66,12 +66,23 @@ The first thing you will notice about tabs in vim is their absence. There is no 
 
 #### Buffers and jump list
 
-The vim way of handling files is named buffer. Each file opened is named a buffer and you don't really need to care how many buffer is open since you don't normally interact with a buffer list. Instead you mostly jump around opened buffers using something called the jump list. As it's name imply, it records every file change or jump around your file (think about "Go to definition/implementation"). This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd><kbd>o</kbd> or <kbd>CTRL</kbd><kbd>i</kbd>.
+The vim way of handling files is named buffer. Each file opened is named a buffer, and you don't really need to care how many buffers is open since you don't normally interact with a buffer list. Instead, you mostly jump around opened buffers using something called the jump list. As its name imply, it records every file change or jump around your file (think about "Go to definition/implementation"). This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd>+<kbd>o</kbd> or <kbd>CTRL</kbd>+<kbd>i</kbd>.
 
-This is kinda like the "Abandon open tabs" approach with an extra jumplist to quickly go back and forth on recently viewed files. 
+This is kinda like the "Abandon open tabs" approach with an extra jump list to quickly go back and forth on recently viewed files. 
 
 #### Pinned files
 
+The jump list works great for quickly navigating between files but after jumping everywhere you probably want to go back to one of your core files. With tabs, I would either look at every opened file and check if that was the file I wanted, if it was, I would close every other files. Since vim does not have tabs, you can't look at every file for that (technically you can, using a command or a plugin but who wants that). You have two solutions to navigate back to your beloved file:
+ - Open your file again (what I was doing with the file-tree approach)
+ - Use global marks as a way to pin files.
+
+You can think of global marks as a bookmark, you first mark a file with a key (<kbd>m</kbd>+<kbd>A</kbd> for example, <kbd>m</kbd> means mark and <kbd>A</kbd> is the name of your mark, it can be any uppercase letter). Pressing <kbd>\'</kbd>+<kbd>A</kbd> will bring you back to the same file at the exact same line as when you bookmarked it.
+
+{{< alert "note" >}}
+
+You might wonder why only uppercase letters are allowed for global marks. That's simply because a lowercase letter refers to a local mark. A local mark is scoped to a file, so you can have a <kbd>a</kbd> mark per file. Pressing it will get you back to the marked line but not change file.
+
+{{< /alert >}}
 
 
 <!-- vim: wrap -->

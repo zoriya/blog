@@ -64,4 +64,15 @@ In a traditional editor, you are probably used to have a few dozen tabs/file ope
 
 The first thing you will notice about tabs in vim is their absence. There is no such things as a tab per file on vim.
 
+#### Buffers and jump list
+
+The vim way of handling files is named buffer. Each file opened is named a buffer and you don't really need to care how many buffer is open since you don't normally interact with a buffer list. Instead you mostly jump around opened buffers using something called the jump list. As it's name imply, it records every file change or jump around your file (think about "Go to definition/implementation"). This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd><kbd>o</kbd> or <kbd>CTRL</kbd><kbd>i</kbd>.
+
+This is kinda like the "Abandon open tabs" approach with an extra jumplist to quickly go back and forth on recently viewed files. 
+
+#### Pinned files
+
+
+
 <!-- vim: wrap -->
+

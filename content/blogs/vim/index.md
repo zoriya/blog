@@ -18,9 +18,10 @@ To the surprise of nobody, vim is not beginner-friendly. Everything will be diff
 
 ### Merit vs difficulty
 
-But one need to remember, the goal of an editor is not being beginner-friendly. Writing software is hard, you are probably not choosing your language or tech stack based on how beginner-friendly it is. You also take into accounts the advantages of your tools and if the advantages outweighs the difficulties of it, you simply use it. Need an example about hard to learn tools that you or your company probably uses: Kubernetes, Git, JS Bundlers, Hexagonal Architecture, React/Angular/YourNewJsFramwork or even Rust (probably not used at your company tho).
+That may sound weird at first, but the goal of an editor is not being beginner-friendly. Writing software is hard, you are probably not choosing your language or tech stack based on how beginner-friendly it is. Taking into account the advantages of your tools is also important. If the advantages outweigh the difficulties of it, you simply use it. <br/>
+Please don't take my word for it, look at the tools you or your company uses daily. Some examples might include kubernetes, git, hexagonal architecture, react/angular/your-new-js-framwork or even rust.
 
-The first thing you should seek in a tool is its capacities. You should prefer to use powerful tools over easy tools for most use cases ; and my guess is you already are doing that for your text editor. Does any of you is using notepad as your daily editor? I certainly hope not.
+The first thing you should seek in a tool is its capacities. You should prefer to use powerful tools over easy tools for most use cases ; and I guess you are already choosing powerful tools for your text editor. I don't think any reader is using notepad or nano as their only editor.
 
 So I just said that you should prefer powerful tools and I guess most of you think that vim is not one of those tools. After all, how can a tool originally created in 1976 be still considered powerful today considering it did not change that much on a surface level?
 
@@ -28,17 +29,25 @@ So I just said that you should prefer powerful tools and I guess most of you thi
 
 ### What is that?
 
-The first thing you will learn, probably painfully, in vim is that it is a modal editor. That means that when you type <kbd>u</kbd>, for example, it won't simply insert that character on the screen but instead will run the command <kbd>u</kbd> which is `undo` by default.
+The first painful thing you will find is pressing <kbd>d</kbd>, `d` will not be inserted on your document. In fact, pressing <kbd>d</kbd> will bring you to the `delete` mode. What is a mode you might say?<br/>
+A mode is a set of keybinds that become available after the mode gets activated. You can think of traditional editors as modeless since they only have one set of keybinds.
+
+Vim on the other hand as a lot of modes, the most well-known ones are `Normal`, `Insert` and `Visual` modes.<br/>
+To put it simply normal is the default one where you can enter all other modes, insert is the one that closely resemble traditional editors (when pressing <kbd>d</kbd> actually inserts `d`) and visual is a mode to select text.<br/>
+There is of course lots of other modes but we don't need to know about them just yet.
+![vim modes](./vim-modes.svg "The chart of all vim modes and how to reach them (I promise it's not as scary as it looks), [source](https://gist.github.com/darcyparker/1886716)")
+
+We can see that pressing <kbd>d</kbd> does not enable a `delete` mode but in fact activates the `Operator-pending mode` with the action `delete` (it's the tiny `operator` branch on the graph). We'll see more of this later.
 
 ### Okay but why?
 
-You might think this is gimmicky at best but this right here is the most important thing about vim and that others editors can't simply reproduce. To understand why this behavior is important, you need to realize what you are doing in your editor is not **inserting text** but **editing it**. Most of the time, you will jump around some text block and change a word for another for example. Most modern editors expect you to use combinations of <kbd>CTRL</kbd>, <kbd>SHIFT</kbd> and arrow keys. Vim on the other hands, created motions to handle this simply by a key press.
+You might think this is gimmicky at best but this right here is the most important thing about vim and that others editors can't simply reproduce. To understand why this behavior is important, you need to realize what you are doing in your editor is not **inserting text** but **editing it**. Most of the time, you will jump around some text block and change a word for another for example. Most modern editors expect you to use combinations of <kbd>CTRL</kbd>, <kbd>SHIFT</kbd> and arrow keys. Vim on the other hands, created motions and modes to handle logical editing commands.
 
-For example, If you want to delete the word your cursor is in, with vs code, IntelliJ or zed, you'll probably do something like <kbd>CTRL SHIFT Right</kbd> to select the word to your right and then press backspace to delete it. If you were not at the beginning but at the middle of the world, you'll probably do something like <kbd>CTRL Left</kbd> + <kbd>CTRL SHIFT Right</kbd> + <kbd>Backspace</kbd>. With vim, you simply type <kbd>dw</kbd> for `delete word` or <kbd>diw</kbd> for `delete inner word`. This remove the clutter of editing source files, you don't need to think "how am I going to do that" you simply do it. When you think, "I want to copy this quoted text", you simply press <kbd>yi"</kbd> which means `yank inner quotes` (yank is the old name of copy). You don't need to break your flow by selecting manually and precisely your quote.
+For example, If you want to delete the word your cursor is in, with vscode, IntelliJ or zed, you'll probably do something like <kbd>CTRL SHIFT Right</kbd> to select the word to your right and then press backspace to delete it. If you were not at the beginning but at the middle of the world, you'll probably do something like <kbd>CTRL Left</kbd> + <kbd>CTRL SHIFT Right</kbd> + <kbd>Backspace</kbd>. With vim, you simply type <kbd>dw</kbd> for `delete word` or <kbd>diw</kbd> for `delete inner word`. This remove the clutter of editing source files, you don't need to think "how am I going to do that" you simply do it. When you think, "I want to copy this quoted text", you simply press <kbd>yi"</kbd> which means `yank inner quotes` (yank is the old name of copy). You don't need to break your flow by selecting manually and precisely your quote.
 
 ### In gamer terms
 
-Those kinds of keys make it hard to learn at first will, in time, become a part of your workflow. This is like with gaming, at first moving with WASD and the mouse or via a controller felt alien. I remember not knowing how to look left or right but after a few hours/days you become used to it and don't need to think about it again. I feel exactly the same about vim. It's a tool I use between 30 and 100 hours a week, and I'll probably use it for at least a decade. I feel like that's the kind of tool I want to be extremely familiar with, even if it's harder in the beginning.
+Modes and motions makes vim harder to learn. With time, this method of typing will slowly become part of your workflow. This is like with gaming, at first moving with WASD and the mouse or with a controller felt alien. I remember not knowing how to look left or right but after a few hours/days you become used to it. You don't need to think about how to do actions, you simply do them. I feel exactly the same about vim. It's a tool I use between 30 and 100 hours a week, and I'll probably use it for decades. I feel like that's the kind of tool I want to be extremely familiar with, even if it's harder in the beginning.
 
 ## The ubiquity of vim bindings
 
@@ -89,7 +98,7 @@ I focused on core vim stuff that could solve some of my issues with traditional 
 
 Most importantly, vim/neovim is expandable and customizable. You can adapt everything to your own workflow by changing 2/3 lines of lua. It also has an active community that integrate all tools inside neovim directly. Be aware tho, if you are not interested on scripting your editor to your liking, you will probably not be interested in vim.  A vim plugin in vscode/intelij is probably more right for you.
 
-> Neovim is PDE, a Personalized Development Environment
+> Neovim is a PDE, a Personalized Development Environment
 >
 > -- <cite>TJ DeVries</cite>
 

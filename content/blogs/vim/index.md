@@ -43,7 +43,7 @@ We can see that pressing <kbd>d</kbd> does not enable a `delete` mode but in fac
 
 You might think this is gimmicky at best but this right here is the most important thing about vim and that others editors can't simply reproduce. To understand why this behavior is important, you need to realize what you are doing in your editor is not **inserting text** but **editing it**. Most of the time, you will jump around some text block and change a word for another for example. Most modern editors expect you to use combinations of <kbd>CTRL</kbd>, <kbd>SHIFT</kbd> and arrow keys. Vim on the other hands, created motions and modes to handle logical editing commands.
 
-For example, If you want to delete the word your cursor is in, with vscode, IntelliJ or zed, you'll probably do something like <kbd>CTRL SHIFT Right</kbd> to select the word to your right and then press backspace to delete it. If you were not at the beginning but at the middle of the world, you'll probably do something like <kbd>CTRL Left</kbd> + <kbd>CTRL SHIFT Right</kbd> + <kbd>Backspace</kbd>. With vim, you simply type <kbd>dw</kbd> for `delete word` or <kbd>diw</kbd> for `delete inner word`. This remove the clutter of editing source files, you don't need to think "how am I going to do that" you simply do it. When you think, "I want to copy this quoted text", you simply press <kbd>yi"</kbd> which means `yank inner quotes` (yank is the old name of copy). You don't need to break your flow by selecting manually and precisely your quote.
+For example, If you want to delete the word your cursor is in, with vscode, IntelliJ or zed, you'll probably do something like <kbd>CTRL SHIFT Right</kbd> to select the word to your right and then press backspace to delete it. If you were not at the beginning but at the middle of the world, you'll probably do something like <kbd>CTRL Left</kbd> + <kbd>CTRL SHIFT Right</kbd> + <kbd>Backspace</kbd>. With vim, you simply type <kbd>dw</kbd> for `delete word` or <kbd>diw</kbd> for `delete inner word`. This remove the clutter of editing source files, you don't need to think "how am I going to do that" you simply do it. When you think, "I want to copy this quoted text", you simply press <kbd>yi"</kbd> which means `yank inner quotes` (yank is the old name of copy). You don't need to stop your action to manually select your quote, you use a built-in motion for that. 
 
 ### In gamer terms
 
@@ -57,6 +57,10 @@ This also means that for starting to use vim, you don't need to do much more tha
 
 You might think learning vim is a daunting task with lots of commands to learn, but it's surprisingly easier than you might think. Sure there are a few commands to learn but most of them are intuitive and most importantly, they chain together since most commands work with the framework `<action><motion>`. Action is what you want to do, for example <kbd>d</kbd> for delete, <kbd>v</kbd> for visual which means highlight, <kbd>y</kbd> for yank which means copy... Motion is the text block you want to edit, for example <kbd>w</kbd> for word, <kbd>iw</kbd> for inner word, <kbd>Left</kbd> for the character on the left of your cursor and so on.
 Vim also has a great built-in way of learning its binding called `vimtutor` which can be run on most Unix systems (or even from git bash if you are on windows).
+
+---
+
+But enough about keybinds and motions, let's talk about another thing completely different between traditional editors and vim. This one is not as well known, but was the perfect solution for my workflow.
 
 ## A story about tabs
 

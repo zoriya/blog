@@ -8,14 +8,13 @@ tags: ["vim", "tools"]
 
 This post is not here to convince you to use vim, but to show you what choices vim made 50 years ago that are still relevant today. Choices that bring benefits that moderns IDEs try to replicate the best they can with their own constraints. This post will also explain some points that make vim feels alien at first but might slowly become your favorite way of editing code.
 
-## The first impression
+## The learning curve
 
-### Could it get worse?
+### Beginner friendliness
 
-To the surprise of nobody, vim is not beginner-friendly. Everything will be different from your usual text editor or IDE of choice. This is so hard for beginners that you can find those kinds of images everywhere on the internet:
+To the surprise of nobody, vim is not beginner-friendly. Everything will be different from your usual text editor or IDE of choice. Vim being so hard to grasp is a well known fact around the internet, you won't have to search long to find this kind of images:
 
-![exit vim first contact way](exit-vim.png)
- *Source: https://github.com/hakluke/how-to-exit-vim*
+![exit vim first contact way](exit-vim.png "Source: https://github.com/hakluke/how-to-exit-vim")
 
 ### Merit vs difficulty
 
@@ -84,6 +83,18 @@ You might wonder why only uppercase letters are allowed for global marks. That's
 
 {{< /alert >}}
 
+## The present of vim and closing notes
+
+I focused on core vim stuff that could solve some of my issues with traditional IDEs but vim in itself is a far more modern editor than you might think. A fork of vim called [neovim](https://github.com/neovim/neovim) supports lsp (tools that creates autocompletion, go to definition, formatting, diagnostics...), treesitter (a fast and powerful code parser/highlighter), debuggers...
+
+Most importantly, vim/neovim is expandable and customizable. You can adapt everything to your own workflow by changing 2/3 lines of lua. It also has an active community that integrate all tools inside neovim directly. Be aware tho, if you are not interested on scripting your editor to your liking, you will probably not be interested in vim.  A vim plugin in vscode/intelij is probably more right for you.
+
+> Neovim is PDE, a Personalized Development Environment
+>
+> -- <cite>TJ DeVries</cite>
+
+Vim is not a key-in-hand solution, and you will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with, consistently learn new things about it and integrate any coreutils tools in my workflow is something I find really enjoyable.
+-- On a side note, I still think `awk` and `jq` are ones of the most underrated tools available.
 
 <!-- vim: wrap -->
 

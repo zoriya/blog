@@ -6,7 +6,9 @@ draft: true
 tags: ["vim", "tools"]
 ---
 
-This post is not here to convince you to use vim, but to show you what choices vim made 50 years ago that are still relevant today. Choices that bring benefits that moderns IDEs try to replicate the best they can with their own constraints. This post will also explain some points that make vim feels alien at first but might slowly become your favorite way of editing code.
+I get asked at lot why I use vim and people don't believe me when I tell them I don't miss IntelliJ or other IDEs. This post will explain why I initially left the comfort of my well-known IDE and tried vim. I'm also going to explain why I find vim's way of handling keybinds and file tabs appealing ; as well as what my paint-points with traditional IDE's way of handling them were.
+
+The post was not written with the indent to convince you to use vim, I don't think everybody should use vim, but I think every dev should master their editor.
 
 ## The learning curve
 
@@ -78,13 +80,15 @@ The first thing you will notice about tabs in vim is their absence. There is no 
 
 #### Buffers and jump list
 
-The vim way of handling files is named buffer. Each file opened is named a buffer, and you don't really need to care how many buffers is open since you don't normally interact with a buffer list. Instead, you mostly jump around opened buffers using something called the jump list. As its name imply, it records every file change or jump around your file (think about "Go to definition/implementation"). This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd>+<kbd>o</kbd> or <kbd>CTRL</kbd>+<kbd>i</kbd>.
+In vim, files are stored in `buffers`. You can think of a buffer as an invisible tab. Since a buffer is invisible, you don't need to close them nor do you manually select one in a list. Instead, you mostly jump around opened buffers using something called the jump list.
+
+As its name imply, it records when you open another file, use "Go to definition/implementation" to move elsewhere or any other action that makes the cursor jump. This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd>+<kbd>o</kbd> or <kbd>CTRL</kbd>+<kbd>i</kbd>.
 
 This is kinda like the "Abandon open tabs" approach with an extra jump list to quickly go back and forth on recently viewed files. 
 
 #### Pinned files
 
-The jump list works great for quickly navigating between files but after jumping everywhere you probably want to go back to one of your core files. With tabs, I would either look at every opened file and check if that was the file I wanted, if it was, I would close every other files. Since vim does not have tabs, you can't look at every file for that (technically you can, using a command or a plugin but who wants that). You have two solutions to navigate back to your beloved file:
+The jump list works great for quickly navigating between files but after jumping everywhere you probably want to go back to one of your core files. With tabs, I would either look at every opened file and check if that was the file I wanted, if it was, I would close every other files. Since vim does not have tabs, this method is not applicable. You have two solutions to navigate back to your beloved file:
  - Open your file again (what I was doing with the file-tree approach)
  - Use global marks as a way to pin files.
 
@@ -96,7 +100,7 @@ You might wonder why only uppercase letters are allowed for global marks. That's
 
 {{< /alert >}}
 
-## The present of vim and closing notes
+## Closing notes: the present of vim
 
 I focused on core vim stuff that could solve some of my issues with traditional IDEs but vim in itself is a far more modern editor than you might think. A fork of vim called [neovim](https://github.com/neovim/neovim) supports lsp (tools that creates autocompletion, go to definition, formatting, diagnostics...), treesitter (a fast and powerful code parser/highlighter), debuggers...
 
@@ -106,7 +110,7 @@ Most importantly, vim/neovim is expandable and customizable. You can adapt every
 >
 > -- <cite>TJ DeVries</cite>
 
-Vim is not a key-in-hand solution, and you will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with, consistently learn new things about it and integrate any coreutils tools in my workflow is something I find really enjoyable.
+Vim is not an of-the-shelf solution. You will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with. Consistently learning new things about the editor and using more coreutils tools in my workflow is something I find really enjoyable.
 -- On a side note, I still think `awk` and `jq` are ones of the most underrated tools available.
 
 <!-- vim: wrap -->

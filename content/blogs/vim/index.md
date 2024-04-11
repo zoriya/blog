@@ -8,8 +8,6 @@ tags: ["vim", "tools"]
 
 I get asked at lot why I use vim and people don't believe me when I tell them I don't miss IntelliJ or other IDEs. This post will explain why I initially left the comfort of my well-known IDE and tried vim. I'm also going to explain why I find vim's way of handling keybinds and file tabs appealing ; as well as what my paint-points with traditional IDE's way of handling them were.
 
-The post was not written with the indent to convince you to use vim, I don't think everybody should use vim, but I think every dev should master their editor.
-
 ## The learning curve
 
 ### Beginner friendliness
@@ -21,7 +19,7 @@ To the surprise of nobody, vim is not beginner-friendly. Everything will be diff
 ### Merit vs difficulty
 
 That may sound weird at first, but the goal of an editor is not being beginner-friendly. Writing software is hard, you are probably not choosing your language or tech stack based on how beginner-friendly it is. Taking into account the advantages of your tools is also important. If the advantages outweigh the difficulties of it, you simply use it. <br/>
-Please don't take my word for it, look at the tools you or your company uses daily. Some examples might include kubernetes, git, hexagonal architecture, react/angular/your-new-js-framwork or even rust.
+Please don't take my word for it, look at the tools you or your company uses daily. Some examples might include kubernetes, git, hexagonal architecture, react/angular/your-new-js-framework or even rust.
 
 The first thing you should seek in a tool is its capacities. You should prefer to use powerful tools over easy tools for most use cases ; and I guess you are already choosing powerful tools for your text editor. I don't think any reader is using notepad or nano as their only editor.
 
@@ -55,9 +53,14 @@ Modes and motions makes vim harder to learn. With time, this method of typing wi
 
 Another great thing about vim bindings is its ubiquity. Most editors (even non-editors like bash or your browser) have plugins for using those keybinds. This means you'll always be able to use those bindings while typing, they mostly have not changed since 50 years I bet they'll stay there for a while longer.
 
-This also means that for starting to use vim, you don't need to do much more than installing a plugin. You don't need to fully abandon your usual IDE and can simply install the vim plugin there to get used to bindings there first.
+This also means that to start using vim, you just need to install a plugin. You don't need to fully abandon your usual IDE. You can simply install the vim plugin and get used to bindings in a familiar environment first.
 
-You might think learning vim is a daunting task with lots of commands to learn, but it's surprisingly easier than you might think. Sure there are a few commands to learn but most of them are intuitive and most importantly, they chain together since most commands work with the framework `<action><motion>`. Action is what you want to do, for example <kbd>d</kbd> for delete, <kbd>v</kbd> for visual which means highlight, <kbd>y</kbd> for yank which means copy... Motion is the text block you want to edit, for example <kbd>w</kbd> for word, <kbd>iw</kbd> for inner word, <kbd>Left</kbd> for the character on the left of your cursor and so on.
+You might think learning vim is a daunting task with lots of commands to learn, but it's surprisingly easier than you might think. Sure there are a few commands to learn but most of them are intuitive and most importantly, they chain together.
+
+Most commands work with the framework `<action><motion>`.
+ - Action is what you want to do, for example <kbd>d</kbd> for delete, <kbd>v</kbd> for visual which means highlight, <kbd>y</kbd> for yank which means copy...
+ - Motion is the text block you want to edit, for example <kbd>w</kbd> for word, <kbd>iw</kbd> for inner word, <kbd>Left</kbd> for the character on the left of your cursor and so on.
+
 Vim also has a great built-in way of learning its binding called `vimtutor` which can be run on most Unix systems (or even from git bash if you are on windows).
 
 ---
@@ -68,7 +71,7 @@ But enough about keybinds and motions, let's talk about another thing completely
 
 ### The classic
 
-In a traditional editor, you are probably used to have a few dozen tabs/file open. When you start having too much of them, how do you find back your file? For me this was a huge pain point for a while, I tried every possible workflow:
+In a traditional editor, you are probably used to have a few dozen tabs/files open. When you start having too much of them, how do you find back your file? For me this was a huge pain point for a while, I tried every possible workflow:
  - Close a tab as soon as I finished with the file. This proved to be a bad method for me since I often jump around files a lot and find myself lost in my tabs before cleanup time.
  - Use "Close other tabs" or "Close tabs on the right/left" features to simply close everything when there is too much. This was efficient after a small debug/coding time, but I needed to use this during coding sessions a lot when writing bigger features.
  - Embrace the "too much open" and use tabs on two lines, keep 3 or 4 most important/used tabs of the time pinned to find them quickly. I really liked having tabs pinned because it reduced the amount of time/mental strain needed to jump back to the most important files. Having items on two lines on the other hand was terrible, I needed twice as much time to look for the file I wanted to use before clicking on it.
@@ -82,7 +85,7 @@ The first thing you will notice about tabs in vim is their absence. There is no 
 
 In vim, files are stored in `buffers`. You can think of a buffer as an invisible tab. Since a buffer is invisible, you don't need to close them nor do you manually select one in a list. Instead, you mostly jump around opened buffers using something called the jump list.
 
-As its name imply, it records when you open another file, use "Go to definition/implementation" to move elsewhere or any other action that makes the cursor jump. This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd>+<kbd>o</kbd> or <kbd>CTRL</kbd>+<kbd>i</kbd>.
+As its name imply, the jump list records when you open another file, use "Go to definition/implementation" to move elsewhere or any other action that makes the cursor jump. This list can then be used to jump back and forth between all those positions by using <kbd>CTRL</kbd>+<kbd>o</kbd> or <kbd>CTRL</kbd>+<kbd>i</kbd>.
 
 This is kinda like the "Abandon open tabs" approach with an extra jump list to quickly go back and forth on recently viewed files. 
 
@@ -96,7 +99,7 @@ You can think of global marks as a bookmark, you first mark a file with a key (<
 
 {{< alert "note" >}}
 
-You might wonder why only uppercase letters are allowed for global marks. That's simply because a lowercase letter refers to a local mark. A local mark is scoped to a file, so you can have a <kbd>a</kbd> mark per file. Pressing it will get you back to the marked line but not change file.
+You might wonder why only uppercase letters are allowed for global marks. That's simply because a lowercase letter refers to a local mark. A local mark is scoped to a file, so you can have a <kbd>a</kbd> mark per file. Pressing it will get you back to the marked line but will not change file.
 
 {{< /alert >}}
 
@@ -104,13 +107,15 @@ You might wonder why only uppercase letters are allowed for global marks. That's
 
 I focused on core vim stuff that could solve some of my issues with traditional IDEs but vim in itself is a far more modern editor than you might think. A fork of vim called [neovim](https://github.com/neovim/neovim) supports lsp (tools that creates autocompletion, go to definition, formatting, diagnostics...), treesitter (a fast and powerful code parser/highlighter), debuggers...
 
-Most importantly, vim/neovim is expandable and customizable. You can adapt everything to your own workflow by changing 2/3 lines of lua. It also has an active community that integrate all tools inside neovim directly. Be aware tho, if you are not interested on scripting your editor to your liking, you will probably not be interested in vim.  A vim plugin in vscode/intelij is probably more right for you.
+Most importantly, vim/neovim is expandable and customizable. You can adapt everything to your own workflow by changing 2/3 lines of lua. It also has an active community that integrate all tools inside neovim directly. For example, two popular plugins to make global marks easier to use as pinned files exists, namely [harpoon](https://github.com/ThePrimeagen/harpoon) and [grapple](https://github.com/cbochs/grapple.nvim).
 
 > Neovim is a PDE, a Personalized Development Environment
 >
 > -- <cite>TJ DeVries</cite>
 
-Vim is not an of-the-shelf solution. You will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with. Consistently learning new things about the editor and using more coreutils tools in my workflow is something I find really enjoyable.
+Be aware though, if you have no interest scripting your editor to your liking, you will probably not be interested in vim.  A vim plugin in vscode/intelij is probably more right for you.
+
+Vim is not an of-the-shelf solution. You will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with. Consistently learning new things about the editor and using more coreutils tools in my workflow is something I find really enjoyable.<br/>
 -- On a side note, I still think `awk` and `jq` are ones of the most underrated tools available.
 
 <!-- vim: wrap -->

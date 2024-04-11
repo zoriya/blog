@@ -1,10 +1,18 @@
+---
+title: "My keyboard journey"
+description: ""
+date: 2024-04-11
+draft: true
+tags: ["keyboard", "tools"]
+---
+
 # My Keyboard Journey
 
-At first, I only wanted to buy a new keyboard because my old one was way past it's time. I started to search for a nice keyboard and as I searched, I slowly fell into the rabbit hole that is mechanical keyboard. After a while, I found split keyboards like those bellow.
+At first, I only wanted to buy a new keyboard because my old one was way past it's time. I started to search for a nice keyboard and as I searched, I slowly fell into the rabbit hole that is mechanical keyboard. After a while, I found split keyboards like the ones bellow.
 
 ![image]
 
-At first, I couldn't do anything but laugh at the idea of someone using something this weird thing as a keyboard. I continued my quest of the right keyboard™ but could not unsee those weird keyboards. I was intrigued and wanted to know why someone thought that this would make a good keyboard and how people were using it. After pondering about it, I decided to buy a Moonlander to try it for myself.
+At first, I couldn't do anything but laugh at the idea of someone using this weird thing as a keyboard. I continued my quest of the right keyboard™ but could not unsee those weird keyboards. I was intrigued. I wanted to know why someone thought that this would make a good keyboard. and how people were using it. After pondering about it, I decided to buy a Moonlander to try it for myself.
 
 ![moonlander]
 
@@ -47,3 +55,5 @@ I used the layout bellow from a moonlander, but I felt the pinky column was way 
 I also did not use a lot of the keys and wanted to learn a bit of electronics, so I decided to create a keyboard.
 
 ![Moonlander layout](./screens/moonlander-layout.png)
+
+<!-- vim: wrap -->

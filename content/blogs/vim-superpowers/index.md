@@ -1,12 +1,12 @@
 ---
-title: "Vim features that IDE wish they could have"
+title: "Vim's superpowers"
 description: ""
-date: 2024-04-03
-draft: true
+date: 2024-04-11
+draft: false
 tags: ["vim", "tools"]
 ---
 
-I get asked at lot why I use vim and people don't believe me when I tell them I don't miss IntelliJ or other IDEs. This post will explain why I initially left the comfort of my well-known IDE and tried vim. I'm also going to explain why I find vim's way of handling keybinds and file tabs appealing ; as well as what my paint-points with traditional IDE's way of handling them were.
+I get asked at lot why I use vim and people don't believe me when I tell them I don't miss IntelliJ or other IDEs. This post will explain why I initially left the comfort of my well-known IDE and tried vim. I'm also going to explain why I find vim's way of handling keybinds and file tabs appealing ; as well as what my pain-points with traditional IDE's way of handling them were.
 
 ## The learning curve
 

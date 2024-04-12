@@ -6,8 +6,6 @@ draft: true
 tags: ["keyboard", "tools"]
 ---
 
-# My Keyboard Journey
-
 At first, I only wanted to buy a new keyboard because my old one was way past it's time. I started to search for a nice keyboard and as I searched, I slowly fell into the rabbit hole that is mechanical keyboard. After a while, I found split keyboards like the ones bellow.
 
 ![image]

@@ -88,12 +88,12 @@ When I think of videos, my first thought initially goes to ffmpeg. As always, ff
 ffmpeg -i in.mkv -f hls ...
 ```
 
-But this approach has a few caveats. The most important one is the time it takes. This command will produce HLS segments one at a time starting from the first. Streaming this file will show users a video of 30s growing untill the command has finished.
+But this approach has a few caveats. The most important one is the time it takes. This command will produce HLS segments one at a time starting from the first. Streaming this file will show users a video of 30s growing until the command has finished.
 
 ![vlc gif of this command playback]
 
 The user can't seek past the transcoded end
- If we want to quality switches, we need a command like this:
+If we want to have automatic quality switches, we need a command like this:
 
 ```bash
 ffmpeg -map

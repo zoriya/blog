@@ -103,7 +103,36 @@ This command will eagerly transcode the video in all qualities ; killing the ser
 
 ## Wrap ffmpeg
 
-// rust approach: ffmpeg process for each quality on demand => changing qualify restarted the stream at the beginning.
+The master playlist we saw earlier is pretty simple (and human readable!). We could manually generate it and create transcode streams only when they are requested. This was my initial approach and it's pretty simple to implement but it has a major flaw.
+
+What happens when you switch quality? Your player will fetch the index.m3u8 file for the new quality. Receiving this request, the server will start a new transcode and give back the index file. Let's pretend your client was playing the 150th segment at 5min of your movie. The newly retrieved index.m3u8 just started transcoding so it might only have 50 segments in it. Your player will not be able to request the segment 150 of the new quality (since it does not exist yet) and start playing at the 45th segment (to keep a margin from the stream tip). The user will now have to rewatch part of the movie or wait for the transcoder to catch up and manually seek.
+
+So how should we fix that? The obvious idea is to start the new encode directly at the requested segment so users don't have to wait. While the idea is pretty simple, actually implementing it is a lot harder.
+First of all, you want to start the transcode at a specific segment but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. Its illegal to do so and the player would not be able to seek before in the video.
+
+In truth, HLS has another rule: each variants needs to have the same segments as the others. I'll steel a diagram from a twitch's blog:
+
+![twitch image]
+
+To specify segments length we can either use `-segment_time` to specify a single length for all segments or we can use `-segment_times` and specify an array of length with one value per segment.
+That's great and you might think this solves the issue but the main constraints of segment has yet to come: Segments needs to start by a keyframe.
+
+What's a keyframe you might ask: it's an independent frame (I-frame) in a video stream. Think of it has an image. Video frames can either be independent (keyframes) or dependant on a keyframe. A dependant keyframe does not store the whole image but the differences relative to another keyframe (a keyframe before for a B-frame and a keyframe after for a P-frame)
+
+![i frame graph]
+
+Great so just put a keyframe every time we create a segment, no? Well yes and no. It would be easy to do so when we transcode, there is a ffmpeg option for that: `-force_keyframe 2` will force a keyframe every 2 seconds. But what about times when we simply copy the video stream? 
+
+It's important to allow playback of the original video stream without re-encoding it since it offers the best video quality. It is also way faster to process on the server. With this enabled even playing on a raspberry pi is doable.
+
+So we absolutely need to allow playback of the original video stream, where we have no control of keyframes. There can be a keyframe every frame or we could have 3 minutes of video without any keyframes. Segments still need to start with a keyframe, even in original quality.
+
+## Allowing original playback
+
+There is only one way to meet the previously stated constraints: giving up control on fixed segments length and aligning on keyframes. Instead of creating a segment every 4s, we scan the whole video and extract keyframes timestamps and create a new segment only on one of those timestamps.
+
+When creating the hls stream from the original video stream, we simply cut it at a previously extracted keyframes. For transcoded stream, we force keyframes and segments cut exactly like before but we use the original's video keyframes as a reference.
+
 
 ## The bugs of ffmpeg
 

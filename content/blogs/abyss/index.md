@@ -54,4 +54,4 @@ I also did not use a lot of the keys and wanted to learn a bit of electronics, s
 
 ![Moonlander layout](./screens/moonlander-layout.png)
 
-<!-- vim: wrap -->
+<!-- vim: set wrap: -->

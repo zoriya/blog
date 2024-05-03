@@ -140,5 +140,5 @@ When creating the hls stream from the original video stream, we simply cut it at
 
 I wrote the transcoder in C, rewrote it in rust and finally rewrote it again in golang.
 
-<!-- vim: wrap -->
+<!-- vim: set wrap: -->
 

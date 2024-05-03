@@ -118,5 +118,5 @@ Be aware though, if you have no interest scripting your editor to your liking, y
 Vim is not an of-the-shelf solution. You will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with. Consistently learning new things about the editor and using more coreutils tools in my workflow is something I find really enjoyable.<br/>
 -- On a side note, I still think `awk` and `jq` are ones of the most underrated tools available.
 
-<!-- vim: wrap -->
+<!-- vim: set wrap: -->
 

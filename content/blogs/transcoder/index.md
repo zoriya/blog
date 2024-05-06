@@ -95,6 +95,7 @@ But this approach has a few caveats. The most important one is the time it takes
 The user can't seek past the transcoded end
 If we want to have automatic quality switches, we need a command like this:
 
+
 ```bash
 ffmpeg -map
 ```
@@ -110,7 +111,8 @@ What happens when you switch quality? Your player will fetch the index.m3u8 file
 So how should we fix that? The obvious idea is to start the new encode directly at the requested segment so users don't have to wait. While the idea is pretty simple, actually implementing it is a lot harder.
 First of all, you want to start the transcode at a specific segment but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. Its illegal to do so and the player would not be able to seek before in the video.
 
-In truth, I also skipped over an important rule of HLS that we break with current appreach: each variants needs to have the same segments as the others. I'll steel a diagram from a twitch's blog:
+
+In truth, HLS has another rule: each variants needs to have their segments aligned (same length and start time). I'll steel a diagram from a twitch's blog:
 
 ![twitch image]
 
@@ -123,7 +125,7 @@ What's a keyframe you might ask: it's an independent frame (I-frame) in a video 
 
 ![i frame graph]
 
-Great so just put a keyframe every time we create a segment, no? Well yes and no. It would be easy to do so when we transcode, there is a ffmpeg option for that: `-force_keyframe 2` will force a keyframe every 2 seconds. But what about times when we simply copy the video stream? 
+Great so just put a keyframe every time we create a segment, no? Well yes and no. It would be easy to do so when we transcode, there is a ffmpeg option for that: `-force_keyframe 2` will force a keyframe every 2 seconds. But what about times when we preserve the original video stream (copy it)? 
 
 It's important to allow playback of the original video stream without re-encoding it since it offers the best video quality. It is also way faster to process on the server. With this enabled even playing on a raspberry pi is doable.
 

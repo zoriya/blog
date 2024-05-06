@@ -82,7 +82,7 @@ Now that we know what we want, let's talk about how we could proceed.
 
 ## Initial idea 
 
-When I think of videos, my first thought initially goes to ffmpeg. As always, ffmpeg does support HLS with the following command:
+When I think of videos, my first (and last) thought goes to ffmpeg. As always, ffmpeg does support HLS with the following command:
 
 ```bash
 ffmpeg -i in.mkv -f hls ...
@@ -110,14 +110,16 @@ What happens when you switch quality? Your player will fetch the index.m3u8 file
 So how should we fix that? The obvious idea is to start the new encode directly at the requested segment so users don't have to wait. While the idea is pretty simple, actually implementing it is a lot harder.
 First of all, you want to start the transcode at a specific segment but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. Its illegal to do so and the player would not be able to seek before in the video.
 
-In truth, HLS has another rule: each variants needs to have the same segments as the others. I'll steel a diagram from a twitch's blog:
+In truth, I also skipped over an important rule of HLS that we break with current appreach: each variants needs to have the same segments as the others. I'll steel a diagram from a twitch's blog:
 
 ![twitch image]
 
 To specify segments length we can either use `-segment_time` to specify a single length for all segments or we can use `-segment_times` and specify an array of length with one value per segment.
 That's great and you might think this solves the issue but the main constraints of segment has yet to come: Segments needs to start by a keyframe.
 
-What's a keyframe you might ask: it's an independent frame (I-frame) in a video stream. Think of it has an image. Video frames can either be independent (keyframes) or dependant on a keyframe. A dependant keyframe does not store the whole image but the differences relative to another keyframe (a keyframe before for a B-frame and a keyframe after for a P-frame)
+## Keyframes
+
+What's a keyframe you might ask: it's an independent frame (I-frame) in a video stream. Think of it has an image. Video frames can either be independent (keyframes) or dependant on a keyframe. A dependant frame does not store the whole image but the differences relative to a keyframe (a keyframe before for a B-frame and a keyframe after for a P-frame)
 
 ![i frame graph]
 
@@ -133,6 +135,21 @@ There is only one way to meet the previously stated constraints: giving up contr
 
 When creating the hls stream from the original video stream, we simply cut it at a previously extracted keyframes. For transcoded stream, we force keyframes and segments cut exactly like before but we use the original's video keyframes as a reference.
 
+To extract keyframes from a video file, we can use ffprobe, a tool that ships with ffmpeg. The following command gives keyframes:
+
+```ffprobe```
+
+If you run this command, you will notice that it's extremily slow. That's because the `-skipkey` argument is a decoder argument so it needs to decode all video frames and then discard the frames wich are not keyframes. We can effectively do the same thing 20 times faster by manually filtering keyframes.
+
+```ffprobe fast```
+
+This command will output something like that:
+
+```ffprobe output```
+
+in a few seconds. We can use that before starting a transcode to know where we should cut segments.
+
+> NOTE: Kyoo actually start transcoding before every keyframes could be retrived since on slow HDD, keyframe extraction can take up to 30 seconds. This unsure that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparant for users and you can resume playback from the middle of your movie latter if you want.
 
 ## The bugs of ffmpeg
 

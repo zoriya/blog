@@ -87,21 +87,52 @@ Now that we know what we want, let's talk about how we could proceed.
 When I think of videos, my first (and last) thought goes to ffmpeg. As always, ffmpeg does support HLS with the following command:
 
 ```bash
-ffmpeg -i in.mkv -f hls ...
+ffmpeg -i input.mkv -map 0:V:0 -map 0:a:0 \
+  -c:v libx264 -b:v 2400000 -bufsize 20000000 -maxrate 4000000 \
+  -c:a aac -ac 2 -b:a 182k \
+  -f hls output.m3u8
 ```
+
+Command breakdown:
+- `ffmpeg`
+- `-i input.mkv`: Specify input file
+- `-map 0:V:0`: Only use the first video stream (`0:` means first input, `V` means video, `:0` means first stream matching). Note that `v` also exists but can contain cover arts instead of video stream
+- `-map 0:a:0`: Only use the first audio stream.
+
+- `-c:v libx264`: Specify the video codec, here we take h264, the most commonly supported one
+- `-b:v 2400000`: Specify the average bit rate of the video
+- `-bufsize 20000000`: How often the encoder should check for bit rate and apply corrections
+- `-maxrate 4000000`: Maximum bit rate
+
+- `-c:a aac`: Specify the audio codec
+- `-ac 2`: Specify the number of audio channels
+- `-b:a 182k`: Average audio bit rate
+
+- `-f hls`: Specify the output format to be HLS.
+- `output.m3u8`: Specify the name of the index playlist.
+
+This naive command does not support automatic quality switches. We would need a command like this for quality switches:
+
+```bash
+ffmpeg -i input.mkv -map 0:V:0 -map 0:a:0 \
+  -c:v libx264 -crf 22 -c:a aac -ar 44100 \
+  -filter:v:0 scale=w=480:h=360  -maxrate:v:0 600k -b:a:0 500k \
+  -filter:v:1 scale=w=640:h=480  -maxrate:v:1 1500k -b:a:1 1000k \
+  -filter:v:2 scale=w=1280:h=720 -maxrate:v:2 3000k -b:a:2 2000k \
+  -var_stream_map "v:0,a:0,name:360p v:1,a:1,name:480p v:2,a:2,name:720p" \
+  -preset fast -hls_list_size 10 -threads 0 -f hls \
+  -hls_time 3 -hls_flags independent_segments \
+  -master_pl_name "livestream.m3u8" \
+  -y "livestream-%v.m3u8"
+```
+
+This command will eagerly transcode the video in all qualities ; killing the server's performances while doing so.
 
 But this approach has a few caveats. The most important one is the time it takes. This command will produce HLS segments one at a time starting from the first. Streaming this file will show users a video of 30s growing until the command has finished.
 
 ![vlc gif of this command playback]
 
-The user can't seek past the transcoded end. This naive command also does not support automatic quality switches. We would need a command like this for quality switches:
-
-
-```bash
-ffmpeg -map
-```
-
-This command will eagerly transcode the video in all qualities ; killing the server's performances while doing so.
+The user can't seek past the transcoded end.
 
 ## Wrap ffmpeg
 
@@ -164,7 +195,10 @@ I iterated a lot on this transcoder, my first implementation was written in C an
 
 Kyoo's transcoder also has other features that resolve around video like extracting subtitles, fonts or media thumbnails for seeking (see picture below). It's still a moving project with new features coming, but the core transcoding process is done and fully working! The next feature that will probably come is intro/outro detection using audio fingerprints.
 
-This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider staring Kyoo on github.
+This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider sharing it or staring Kyoo on github.
 
 <!-- vim: set wrap: -->
+
+`ffmpeg -i input.mkv  -map 0:V:0 -c:v libx264 -preset faster -vf scale=854:480 -bufsize 10500000 -b:v 1200000 -maxrate 2100000 -force_key_frames 2.002000,4.004000,6.006000,... -sc_threshold 0 -f segment -segment_time_delta 0.2 -segment_format mpegts -segment_times 2.002000,4.004000,6.006000,... -segment_list_type flat -segment_list pipe:1 -segment_start_number 0 /tmp/k/segment-480p-0-%d.ts `
+
 

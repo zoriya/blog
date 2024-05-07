@@ -158,14 +158,13 @@ in a few seconds. We can use that before starting a transcode to know where we s
 
 With that, you might think we have a complete on-demand transcoder but I'd call this a POC at most. The real challenge comes after actually running transcode on lots of media and finding quirks on ffmpeg's output, I won't go into details in this blog but all video/audio codecs are different and ffmpeg has obscure flags for some of them.
 
-Hardware acceleration, aka using your graphics card for faster transcode is also a difficult point, not because it's hard per se since ffmpeg abstracts this for us. It's hard because it add edge cases. To give a simple example, the `-force_keyframes` option that we used to create a IDR frame at every given timestamp does not create IDR frames when using CUDA (Nvidia's hardware acceleration). The frame created is still an I-frame so it's not a bug in ffmpeg but this results in an invalid HLS stream. For this specific case, we need to use the `-force_idr 1` option.
+Hardware acceleration, aka using your graphics card for faster transcode is also a difficult point, not because it's hard per se since ffmpeg abstracts this for us. It's hard because it add edge cases. To give a simple example, the `-force_keyframes` option that we used to create a IDR frame at every given timestamp does not create IDR frames when using CUDA (Nvidia's hardware acceleration). The frame created is still an I-frame so it's not a bug in ffmpeg but this results in an invalid HLS stream. For this specific case, we need to use the `-force_idr 1` option that, to my knowledge, only CUDA specific encoders read.
 
+I iterated a lot on this transcoder, my first implementation was written in C and used ffmpeg's library directly (this was also my first C and low level project, I had never heard of a pointer before). Everybody told me this was a bad idea and I should just create a node process that would call ffmpeg. While this was the right call if I wanted to quickly create a transcoder, learing to read the ffmpeg's source code and how it worked inside gave me lots of insights. Insights I still use today when working in today's transcoder, after rewriting everything in Rust and then in Go. Each rewrite originated from perspective shift on how to process state and streams, leading to the current implementation that finally archived every goal.
 
-## The bugs of ffmpeg
+Kyoo's transcoder also has other features that resolve around video like extracting subtitles, fonts or media thumbnails for seeking (see picture below). It's still a moving project with new features coming, but the core transcoding process is done and fully working! The next feature that will probably come is intro/outro detection using audio fingerprints.
 
-## Don't be afraid of failures
-
-I wrote the transcoder in C, rewrote it in rust and finally rewrote it again in golang.
+This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider staring Kyoo on github.
 
 <!-- vim: set wrap: -->
 

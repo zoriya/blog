@@ -12,8 +12,8 @@ Users don't always have a stable connection, but they should be able to play the
 
 ## The goal
 
-To put the goal list into text we want a service capable of:
- - Streaming a video file
+The service should be able to:
+ - Stream a video file
  - Allow users to select the video quality
  - Allow clients to automatically select the best video quality it can play (and auto-switch when internet speed changes)
  - Prefer the original video if it can be played by the device/connection speed
@@ -27,6 +27,8 @@ As for any video services, the following points should also be satisfied:
 ## The constraints
 
 To allow clients to change quality when the connection's speed changes, two standards exist. HLS and Dash. Both are widely supported and offer the same benefits and constraints. I used HLS, but I believe the two could be used interchangeably without too much issue.
+
+### HLS: an introduction
 
 I'm going to give you a brief overview of what HLS looks like. It consists of 3 types of files:
 
@@ -92,8 +94,7 @@ But this approach has a few caveats. The most important one is the time it takes
 
 ![vlc gif of this command playback]
 
-The user can't seek past the transcoded end
-If we want to have automatic quality switches, we need a command like this:
+The user can't seek past the transcoded end. This naive command also does not support automatic quality switches. We would need a command like this for quality switches:
 
 
 ```bash
@@ -151,7 +152,14 @@ This command will output something like that:
 
 in a few seconds. We can use that before starting a transcode to know where we should cut segments.
 
-> NOTE: Kyoo actually start transcoding before every keyframes could be retrived since on slow HDD, keyframe extraction can take up to 30 seconds. This unsure that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparant for users and you can resume playback from the middle of your movie latter if you want.
+> NOTE: Kyoo actually start transcoding before every keyframes could be retrieved since on slow HDD, keyframe extraction can take up to 30 seconds. This ensure that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparent for users and you can resume playback from the middle of your movie latter if you want.
+
+## Wrapping up
+
+With that, you might think we have a complete on-demand transcoder but I'd call this a POC at most. The real challenge comes after actually running transcode on lots of media and finding quirks on ffmpeg's output, I won't go into details in this blog but all video/audio codecs are different and ffmpeg has obscure flags for some of them.
+
+Hardware acceleration, aka using your graphics card for faster transcode is also a difficult point, not because it's hard per se since ffmpeg abstracts this for us. It's hard because it add edge cases. To give a simple example, the `-force_keyframes` option that we used to create a IDR frame at every given timestamp does not create IDR frames when using CUDA (Nvidia's hardware acceleration). The frame created is still an I-frame so it's not a bug in ffmpeg but this results in an invalid HLS stream. For this specific case, we need to use the `-force_idr 1` option.
+
 
 ## The bugs of ffmpeg
 

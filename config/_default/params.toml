@@ -1,10 +1,13 @@
 colorScheme = "sapphire"
 # enableSearch = true
 enableCodeCopy = true
+robots = "all"
 footer.showAppearanceSwitcher = true
 
 homepage.layout = "profile"
-homepage.showRecent = false
+homepage.showRecent = true
 
 article.showTableOfContents = true
+article.showEdit = true
+article.editURL = "https://github.com/zoriya/blog/tree/master/content/"
 list.showSummary = false

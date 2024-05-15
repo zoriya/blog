@@ -82,9 +82,9 @@ segment-259.ts
 
 Now that we know what we want, let's talk about how we could proceed.
 
-## Initial idea 
+### Generate HLS via ffmpeg
 
-When I think of videos, my first (and last) thought goes to ffmpeg. As always, ffmpeg does support HLS with the following command:
+When dealing with video content, ffmpeg always comes to the rescue. We can generate HLS streams with the following command:
 
 ```bash
 ffmpeg -i input.mkv -map 0:V:0 -map 0:a:0 \
@@ -114,34 +114,46 @@ Command breakdown:
 This naive command does not support automatic quality switches. We would need a command like this for quality switches:
 
 ```bash
-ffmpeg -i input.mkv -map 0:V:0 -map 0:a:0 \
-  -c:v libx264 -crf 22 -c:a aac -ar 44100 \
-  -filter:v:0 scale=w=480:h=360  -maxrate:v:0 600k -b:a:0 500k \
-  -filter:v:1 scale=w=640:h=480  -maxrate:v:1 1500k -b:a:1 1000k \
-  -filter:v:2 scale=w=1280:h=720 -maxrate:v:2 3000k -b:a:2 2000k \
-  -var_stream_map "v:0,a:0,name:360p v:1,a:1,name:480p v:2,a:2,name:720p" \
-  -preset fast -hls_list_size 10 -threads 0 -f hls \
-  -hls_time 3 -hls_flags independent_segments \
-  -master_pl_name "livestream.m3u8" \
-  -y "livestream-%v.m3u8"
+ffmpeg -i input.mkv -map 0:V:0 -c:v libx264 \
+  -filter:v:0 scale=480:360  -b:v:0  800000 \
+  -filter:v:1 scale=640:480  -b:v:1 1200000 \
+  -filter:v:2 scale=1280:720 -b:v:1 2400000 \
+  -var_stream_map "v:0,name:360p v:1,name:480p v:2,name:720p" \
+  -f hls output.m3u8
 ```
+
+Command breakdown:
+- `ffmpeg -i input.mkv -map 0:V:0 -c:v libx264`: same as the previous command
+
+- `-filter:v:0 scale=480:360`: Specify filter for the first video stream only, here we want to scale the video to 360p.
+- `-b:v:0 2400000`: Here we specify the bitrate of only the first video stream, with `v:0`
+
+- `-var_stream_map "v:0,name:360p v:1,name:480p v:2,name:720p"`: Specify names for each stream. This flag could also be used to tell ffmpeg to merge audio and video in the same segments files, for example by using `v:0,a:0,name:360pWithAudio`.
+- `-f hls output.m3u8`: Same as the previous command but this time, `output.m3u8` refers to the master playlist instead of the index one.
 
 This command will eagerly transcode the video in all qualities ; killing the server's performances while doing so.
 
-But this approach has a few caveats. The most important one is the time it takes. This command will produce HLS segments one at a time starting from the first. Streaming this file will show users a video of 30s growing until the command has finished.
+The two previous commands share a common pitfall: the commands will produce HLS segments one at a time starting from the first. Streaming this file will show users a video of 30s growing until the command has finished.
 
 ![vlc gif of this command playback]
 
-The user can't seek past the transcoded end.
+The user can't seek past the transcoded end. They need to wait for the transcoder to reach the point they want to seek to.
 
-## Wrap ffmpeg
+## The solution
 
-The master playlist we saw earlier is pretty simple (and human readable!). We could manually generate it and create transcode streams only when they are requested. This was my initial approach and it's pretty simple to implement but it has a major flaw.
+The master playlist we saw earlier is pretty simple (and human-readable!). We could manually generate it and create transcode streams only when they are requested. This was my initial approach as it's pretty simple to implement, but it has a major flaw.
 
-What happens when you switch quality? Your player will fetch the index.m3u8 file for the new quality. Receiving this request, the server will start a new transcode and give back the index file. Let's pretend your client was playing the 150th segment at 5min of your movie. The newly retrieved index.m3u8 just started transcoding so it might only have 50 segments in it. Your player will not be able to request the segment 150 of the new quality (since it does not exist yet) and start playing at the 45th segment (to keep a margin from the stream tip). The user will now have to rewatch part of the movie or wait for the transcoder to catch up and manually seek.
+### First flaw
 
-So how should we fix that? The obvious idea is to start the new encode directly at the requested segment so users don't have to wait. While the idea is pretty simple, actually implementing it is a lot harder.
-First of all, you want to start the transcode at a specific segment but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. Its illegal to do so and the player would not be able to seek before in the video.
+What happens when you switch quality? Your player will fetch the index.m3u8 file for the new quality. Receiving this request, the server will start a new transcode and give back the index file.<br/>
+Let's pretend your client was playing the 150th segment at 5 min of your movie in 4k. Your internet connection gets worse and your client requests the version in 1080p. The transcode starts and your clients receives the newly created `index.m3u8`.<br/>
+Since transcoding has just started, it might only have 50 segments in it. Your player will not be able to request the segment 150 of the new quality (since it does not exist in the `index.m3u8` yet) and start playing at the 45th segment (to keep a margin from the stream tip).<br/>
+The user will now have to rewatch part of the movie or wait for the transcoder to catch up and manually seek.
+
+![scenario-illustration.png](./scenario-paint.png "A schema of the scenario made with the help of paintjs.app")
+
+So how should we fix that? The obvious idea is to start the new encode directly at the requested segment, so users don't have to wait. While the idea is pretty simple, actually implementing it is a lot harder.
+First, you want to start the transcode at a specific segment, but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. It's illegal to do so and the player would not be able to seek before in the video.
 
 
 In truth, HLS has another rule: each variants needs to have their segments aligned (same length and start time). I'll steel a diagram from a twitch's blog:

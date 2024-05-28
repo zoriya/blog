@@ -156,12 +156,20 @@ So how should we fix that? The obvious idea is to start the new encode directly 
 First, you want to start the transcode at a specific segment, but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. It's illegal to do so and the player would not be able to seek before in the video.
 
 
-In truth, HLS has another rule: each variants needs to have their segments aligned (same length and start time). I'll steel a diagram from a twitch's blog:
+In truth, HLS has another rule: each variant needs to have their segments aligned (same length and start time). I'll steel a diagram from a twitch's blog:
 
-![twitch image]
+![variant-alignment](./twitch-variant-alignment.png "Source: https://blog.twitch.tv/en/2017/10/10/live-video-transmuxing-transcoding-f-fmpeg-vs-twitch-transcoder-part-i-489c1c125f28/")
 
-To specify segments length we can either use `-segment_time` to specify a single length for all segments or we can use `-segment_times` and specify an array of length with one value per segment.
-That's great and you might think this solves the issue but the main constraints of segment has yet to come: Segments needs to start by a keyframe.
+We will talk about what does IDR means in the next chapter. You can see that each segment is aligned: they start and end at exactly the same time in all variants. This makes it easy to switch quality/variant at any point (as illustrated by the arrows).
+
+To specify segments length we can either use `-segment_time` to specify a single length for all segments, or we can use `-segment_times` and specify an array of length with one value per segment.
+That's great, and you might think this solves the issue, but we can't simply cut a video in two at any point. We need each segment to start with a keyframe, the `IDR` in the previous illustration.
+
+While we can manually create keyframes at the start of segment when we transcode, we have no control over keyframes when we transmux (keep the original video stream). This means we could have a HLS setup like this:
+
+![variant-misalignment](./twitch-variant-misalignment.png "Same graph as before but with a transmux stream")
+
+Let's take a step back and focus on what's a keyframe beforehand:
 
 ## Keyframes
 

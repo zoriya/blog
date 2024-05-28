@@ -203,13 +203,13 @@ When creating the hls stream from the original video stream, we simply cut segme
 To extract keyframes from a video file, we can use ffprobe, a tool that ships with ffmpeg. The following command gives keyframes:
 
 ```bash
-ffprobe -loglevel error -select_streams v:0 \
-  -show_entries packet=pts_time \
-  -skip_frame nokey \
-  -of csv=print_section=0 input.mkv
+ffprobe -loglevel error \
+  -skip_frame nokey -select_streams v:0 \
+  -show_entries frame=pts_time \
+  -of csv=print_section=0 video/Sherlock\ S01E02.mkv
 ```
 
-If you run this command, you will notice that it's extremely slow. That's because the `-skip_frame nokey` argument is a decoder argument, so it needs to decode all video frames and then discard the frames which are not keyframes. We can effectively do the same thing 20 times faster by manually filtering keyframes.
+If you run this command, you will notice that it's extremely slow. That's because the `-skip_frame nokey` argument is a decoder argument, so it needs to decode all video frames and then discard the frames which are not keyframes. We can effectively do the same thing 20 times faster by manually filtering keyframes without decoding frames.
 
 ```bash
 ffprobe -loglevel error -select_streams v:0 \

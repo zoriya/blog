@@ -143,8 +143,6 @@ This command will eagerly transcode the video in all qualities ; killing the ser
 
 The two previous commands share a common pitfall: the commands will produce HLS segments one at a time starting from the first. Streaming this file will show users a video of 30s growing until the command has finished.
 
-![vlc gif of this command playback]
-
 The user can't seek past the transcoded end. They need to wait for the transcoder to reach the point they want to seek to.
 
 ## The solution

@@ -93,7 +93,9 @@ ffmpeg -i input.mkv -map 0:V:0 -map 0:a:0 \
   -f hls output.m3u8
 ```
 
-Command breakdown:
+<details>
+<summary>Command breakdown</summary>
+
 - `ffmpeg`
 - `-i input.mkv`: Specify input file
 - `-map 0:V:0`: Only use the first video stream (`0:` means first input, `V` means video, `:0` means first stream matching). Note that `v` also exists but can contain cover arts instead of video stream
@@ -111,6 +113,8 @@ Command breakdown:
 - `-f hls`: Specify the output format to be HLS.
 - `output.m3u8`: Specify the name of the index playlist.
 
+</details>
+
 This naive command does not support automatic quality switches. We would need a command like this for quality switches:
 
 ```bash
@@ -122,7 +126,9 @@ ffmpeg -i input.mkv -map 0:V:0 -c:v libx264 \
   -f hls output.m3u8
 ```
 
-Command breakdown:
+<details>
+<summary>Command breakdown</summary>
+
 - `ffmpeg -i input.mkv -map 0:V:0 -c:v libx264`: same as the previous command
 
 - `-filter:v:0 scale=480:360`: Specify filter for the first video stream only, here we want to scale the video to 360p.
@@ -130,6 +136,8 @@ Command breakdown:
 
 - `-var_stream_map "v:0,name:360p v:1,name:480p v:2,name:720p"`: Specify names for each stream. This flag could also be used to tell ffmpeg to merge audio and video in the same segments files, for example by using `v:0,a:0,name:360pWithAudio`.
 - `-f hls output.m3u8`: Same as the previous command but this time, `output.m3u8` refers to the master playlist instead of the index one.
+
+</details>
 
 This command will eagerly transcode the video in all qualities ; killing the server's performances while doing so.
 
@@ -172,7 +180,7 @@ While we can manually create keyframes at the start of segment when we transcode
 
 Clients watching this stream could not change quality without replaying or skipping part of a segment. Let's take a step back and focus on what's a keyframe before searching for a solution.
 
-## A story about Keyframes
+## About keyframes
 
 ### What's a keyframe
 
@@ -180,7 +188,7 @@ So, what's a keyframe: it's an independent frame (I-frame) in a video stream. Th
 
 ![ipb-frame-explanation](./ipb-frames.jpg "Source: https://www.canon.com.hk/cpx/en/technical/va_EOS_Movie_Compression_Options_All_I_and_IPB.html")
 
-In the previous illustration, you can see on the top row what you would see when playing the video. On the bottom row, you can see video frames. I-frames are keyframes, P-frames and B-frames are both dependent frames (B-frames are `bidirectionally predicted pictures`, it can depend on both previous and future frames). You can read more about I/P/B frames on [Wikipedia](https://en.wikipedia.org/wiki/Inter_frame).br/
+In the previous illustration, you can see on the top row what you would see when playing the video. On the bottom row, you can see video frames. I-frames are keyframes, P-frames and B-frames are both dependent frames (B-frames are `bidirectionally predicted pictures`, it can depend on both previous and future frames). You can read more about I/P/B frames on [Wikipedia](https://en.wikipedia.org/wiki/Inter_frame).<br/>
 With this new knowledge about dependent frames, you can now understand why segments must start with a keyframe. A player could not show the image without the preceding keyframe anyway.
 
 So we absolutely need to allow playback of the original video stream, where we have no control of keyframes. There can be a keyframe every frame, or we could have 3 minutes of video without any keyframe. Segments still need to start with a keyframe, even in original quality.
@@ -229,13 +237,18 @@ This command will output something like that:
 
 in a few seconds. We can use that before starting a transcode to know where we should cut segments.
 
-> NOTE: Kyoo actually start transcoding before every keyframes could be retrieved since on slow HDD, keyframe extraction can take up to 30 seconds. This ensures that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparent for users, and you can resume playback from the middle of your movie latter if you want.
+{{< alert "note" >}}
+
+Kyoo actually start transcoding before every keyframes could be retrieved since on slow HDD, keyframe extraction can take up to 30 seconds. This ensures that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparent for users, and you can resume playback from the middle of your movie latter if you want.
+
+{{< /alert >}}
 
 ## Wrapping up
 
-With that, you might think we have a complete on-demand transcoder but I'd call this a POC at most. The real challenge comes after actually running transcode on lots of media and finding quirks on ffmpeg's output, I won't go into details in this blog but all video/audio codecs are different and ffmpeg has obscure flags for some of them.
+You now have a good idea of how streams can be created. The transcoder's job is also to keep and manage state to handle multiples users that can seek or change files, but that's not the point of this blog.
 
-Hardware acceleration, aka using your graphics card for faster transcode is also a difficult point, not because it's hard per se since ffmpeg abstracts this for us. It's hard because it add edge cases. To give a simple example, the `-force_keyframes` option that we used to create a IDR frame at every given timestamp does not create IDR frames when using CUDA (Nvidia's hardware acceleration). The frame created is still an I-frame so it's not a bug in ffmpeg but this results in an invalid HLS stream. For this specific case, we need to use the `-force_idr 1` option that, to my knowledge, only CUDA specific encoders read.
+An other important point about video transcoding is the difference between each formats/setup. ffmpeg handle almost every case, but it always has some quirks or obscure flags.<br/>
+For example, hardware acceleration, aka using your graphics card for faster transcode is one of them. Not because it's hard per se since ffmpeg abstracts this for us. It's hard because it adds edge cases. To give a simple example, the `-force_keyframes` option that we used to create an IDR frame at every given timestamp does not create IDR frames when using CUDA (Nvidia's hardware acceleration). The frame created is still an I-frame so it's not a bug in ffmpeg but this results in an invalid HLS stream. For this specific case, we need to use the `-force_idr 1` option that, to my knowledge, only CUDA specific encoders read.
 
 I iterated a lot on this transcoder, my first implementation was written in C and used ffmpeg's library directly (this was also my first C and low level project, I had never heard of a pointer before). Everybody told me this was a bad idea and I should just create a node process that would call ffmpeg. While this was the right call if I wanted to quickly create a transcoder, learing to read the ffmpeg's source code and how it worked inside gave me lots of insights. Insights I still use today when working in today's transcoder, after rewriting everything in Rust and then in Go. Each rewrite originated from perspective shift on how to process state and streams, leading to the current implementation that finally archived every goal.
 

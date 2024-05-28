@@ -8,7 +8,7 @@ tags: ["ffmpeg", "kyoo"]
 
 For [Kyoo](https://github.com/zoriya/kyoo), I need to play video on a variety of clients (browsers, TVs, mobile apps). Clients does not always support the video codec of the source video since videos are user provided. Any valid video should work everywhere. Users should not have to worry about converting videos for Kyoo to work, everything should Work™ the first time.
 
-Users don't always have a stable connection, but they should be able to play their video, even if they are on a train. Those constraints mean that Kyoo needs a service to change videos codec and file size (transcode) on the fly. Why on the fly? Because we don't want users to store all their videos 5 times (the original, a 480p version, a 720p version and so on).
+Users don't always have a stable connection, but they should be able to play their video. Even if they are on a train. Those constraints mean that Kyoo needs a service to change videos codec and file size (transcode) on the fly. Why on the fly? Because we don't want users to store all their videos 5 times (the original, a 480p version, a 720p version and so on).
 
 ## The goal
 
@@ -194,19 +194,42 @@ When creating the hls stream from the original video stream, we simply cut segme
 
 To extract keyframes from a video file, we can use ffprobe, a tool that ships with ffmpeg. The following command gives keyframes:
 
-```ffprobe```
+```bash
+ffprobe -loglevel error -select_streams v:0 \
+  -show_entries packet=pts_time \
+  -skip_frame nokey \
+  -of csv=print_section=0 input.mkv
+```
 
-If you run this command, you will notice that it's extremily slow. That's because the `-skipkey` argument is a decoder argument so it needs to decode all video frames and then discard the frames wich are not keyframes. We can effectively do the same thing 20 times faster by manually filtering keyframes.
+If you run this command, you will notice that it's extremely slow. That's because the `-skip_frame nokey` argument is a decoder argument, so it needs to decode all video frames and then discard the frames which are not keyframes. We can effectively do the same thing 20 times faster by manually filtering keyframes.
 
-```ffprobe -loglevel error -select_streams v:0 -show_entries packet=pts_time,flags -of csv=print_section=0  input.mkv | awk -F',' '/K/ {print $1}'```
+```bash
+ffprobe -loglevel error -select_streams v:0 \
+  -show_entries packet=pts_time,flags \
+  -of csv=print_section=0 input.mkv \
+  | awk -F',' '/K/ {print $1}'
+```
 
 This command will output something like that:
 
-```ffprobe output```
+```
+0.000000
+2.002000
+4.004000
+6.006000
+8.008000
+10.010000
+12.012000
+14.014000
+16.016000
+18.018000
+20.020000
+22.022000
+```
 
 in a few seconds. We can use that before starting a transcode to know where we should cut segments.
 
-> NOTE: Kyoo actually start transcoding before every keyframes could be retrieved since on slow HDD, keyframe extraction can take up to 30 seconds. This ensure that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparent for users and you can resume playback from the middle of your movie latter if you want.
+> NOTE: Kyoo actually start transcoding before every keyframes could be retrieved since on slow HDD, keyframe extraction can take up to 30 seconds. This ensures that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparent for users, and you can resume playback from the middle of your movie latter if you want.
 
 ## Wrapping up
 
@@ -216,7 +239,10 @@ Hardware acceleration, aka using your graphics card for faster transcode is also
 
 I iterated a lot on this transcoder, my first implementation was written in C and used ffmpeg's library directly (this was also my first C and low level project, I had never heard of a pointer before). Everybody told me this was a bad idea and I should just create a node process that would call ffmpeg. While this was the right call if I wanted to quickly create a transcoder, learing to read the ffmpeg's source code and how it worked inside gave me lots of insights. Insights I still use today when working in today's transcoder, after rewriting everything in Rust and then in Go. Each rewrite originated from perspective shift on how to process state and streams, leading to the current implementation that finally archived every goal.
 
-Kyoo's transcoder also has other features that resolve around video like extracting subtitles, fonts or media thumbnails for seeking (see picture below). It's still a moving project with new features coming, but the core transcoding process is done and fully working! The next feature that will probably come is intro/outro detection using audio fingerprints.
+Kyoo's transcoder also has other features that resolve around video like extracting subtitles, fonts or media thumbnails for seeking (see picture below).
+![thumbnail for seeking](./kyoo-thumbnail-seek.png)
+
+It's still a moving project with new features coming, but the core transcoding process is done and fully working! The next feature that will probably come is intro/outro detection using audio fingerprints.
 
 This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider sharing it or staring [Kyoo](https://github.com/zoriya/kyoo) on github.
 

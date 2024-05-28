@@ -1,13 +1,21 @@
-colorScheme = "sapphire"
-# enableSearch = true
+# colorScheme = "princess"
+autoSwitchAppearance = true
+enableSearch = true
 enableCodeCopy = true
+smartTOC = true
 robots = "all"
-footer.showAppearanceSwitcher = true
 
 homepage.layout = "profile"
 homepage.showRecent = true
 
+footer.showAppearanceSwitcher = true
+
 article.showTableOfContents = true
 article.showEdit = true
 article.editURL = "https://github.com/zoriya/blog/tree/master/content/"
+article.showWordCount = false
+article.showAuthorBottom = true
+article.showTaxonomies = true
+article.showRelatedContent = true
+article.relatedContentLimit = 3
 list.showSummary = false

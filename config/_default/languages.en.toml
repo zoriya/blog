@@ -1,6 +1,9 @@
 title = "Zoe's blog"
 
-[params.author]
+[params]
+# logo = "img/author.png"
+
+[author]
 name = "Zoe Roux"
 image = "img/author.png"
 headline = "I'm not a dev, I'm a sorceress."
@@ -9,4 +12,5 @@ links = [
 	{ github = "https://github.com/zoriya" },
 	{ linkedin = "https://www.linkedin.com/in/zoe-roux/" },
 	{ twitter = "https://twitter.com/zoriya_dev" },
+	{ rss = "https://zoriya.dev/index.xml" },
 ]

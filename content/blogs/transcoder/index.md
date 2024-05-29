@@ -18,11 +18,11 @@ The service should be able to:
  - Allow clients to automatically select the best video quality it can play (and auto-switch when internet speed changes)
  - Prefer the original video if it can be played by the device/connection speed
 
-The last point is particularly important since Kyoo is self-hosted and user's servers are not always powerful enough to always transcode video. For example a Raspberry Pi will not be able to transcode videos, but simply transmuxing and conserving the original video stream is possible.
+The last point is particularly important since Kyoo is self-hosted and user's servers are not always powerful enough to transcode video. For example a Raspberry Pi will not be able to transcode videos, but simply transmuxing and conserving the original video stream is possible.
 
 As for any video services, the following points should also be satisfied:
- - Start playing fast (we don't want to wait 30s to start watching a movie)
- - Allow users to seek anywhere on the media at any point
+ - Start playing quickly (we don't want to wait 30s to start watching a movie)
+ - Allow users to seek anywhere on the media, even when playback just started
 
 ## The constraints
 
@@ -163,7 +163,7 @@ While the idea is pretty simple, actually implementing it is a lot harder. First
 
 ### Alignments
 
-In truth, HLS has another rule: each variant needs to have their segments aligned (same length and start time). I'll steel a diagram from a twitch's blog:
+In truth, HLS has another rule: each variant needs to have their segments aligned (same length and start time). I'll steal a diagram from a twitch's blog:
 
 ![variant-alignment](./twitch-variant-alignment.png "Source: https://blog.twitch.tv/en/2017/10/10/live-video-transmuxing-transcoding-f-fmpeg-vs-twitch-transcoder-part-i-489c1c125f28/")
 

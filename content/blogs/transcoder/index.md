@@ -1,5 +1,5 @@
 ---
-title: "The challenge of writting a on-demand transcoder"
+title: "The challenge of writing a on-demand transcoder"
 description: ""
 date: 2024-04-12
 draft: true
@@ -36,7 +36,7 @@ I'm going to give you a brief overview of what HLS looks like. It consists of 3 
  - Index/segments playlist (.m3u8), a file listing every segments' URL and their length.
  - Master playlists (.m3u8) that contains the list of variants (720p, 1080p, 4k...).
 <details>
-<summary>Example index.m3u8 playlist</summary>
+<summary>Example index.m3u8 (variant) playlist</summary>
 
 ```m3u8
 #EXTM3U
@@ -174,7 +174,7 @@ If we tried to run a ffmpeg command with this flags, you would quickly notice an
 
 While we can manually create keyframes at the start of segment when we transcode (using the `-force_key_frames` flag), we have no control over keyframes when we transmux (keep the original video stream). This means we could have a HLS setup like this:
 
-![variant-misalignment](./twitch-variant-misalignment.png "Same graph as before but with a transmux stream")
+![variant-misalignment](./twitch-variant-misalignment.png "Same graph as before but with a transmux stream. Notice how segments are not aligned.")
 
 Clients watching this stream could not change quality without replaying or skipping part of a segment. Let's take a step back and focus on what's a keyframe before searching for a solution.
 
@@ -204,8 +204,21 @@ To extract keyframes from a video file, we can use ffprobe, a tool that ships wi
 ffprobe -loglevel error \
   -skip_frame nokey -select_streams v:0 \
   -show_entries frame=pts_time \
-  -of csv=print_section=0 video/Sherlock\ S01E02.mkv
+  -of csv=print_section=0 input.mkv
 ```
+
+<details>
+<summary>Command breakdown</summary>
+
+- `ffprobe`
+- `-loglevel error`: Disable file's metadata printing, we don't need those.
+- `-skip_frame nokey`: Skip non-keyframe. We only want to print keyframes time so we don't need the other frames.
+- `-select_streams v:0`: Only read the first video stream, like the `-map` of `ffmpeg`
+- `-show_entries frame=pts_time`: Only print the presentation time of frames: the timestamp when the frame should be seen. Frames are not always sorted in presentation order (for examples with b-frames) and don't always have the same duration.
+- `-of csv=print_section=0`: Set the output format to csv and ask it to print the content of the first section (`frame`). Without the `=print_section=0` it would print something like `frame,2.0002`.
+- `input.mkv`: The input file.
+
+</details>
 
 If you run this command, you will notice that it's extremely slow. That's because the `-skip_frame nokey` argument is a decoder argument, so it needs to decode all video frames and then discard the frames which are not keyframes. We can effectively do the same thing 20 times faster by manually filtering keyframes without decoding frames.
 
@@ -215,6 +228,28 @@ ffprobe -loglevel error -select_streams v:0 \
   -of csv=print_section=0 input.mkv \
   | awk -F',' '/K/ {print $1}'
 ```
+
+<details>
+<summary>Command breakdown</summary>
+
+- `ffprobe -loglevel error -select_streams v:0`: Same as before but without the `-skip_frame nokey`
+- `-show_entries packet=pts_time,flags`: Instead of filtering keyframes and printing frame's presentation time, we simply print *packet*'s presentation time and flags. All frames are contained in a packet that also contains the presentation time and some metadata. Printing the packet information's instead of the frame's allows ffmpeg to not open and decode frames.
+- `-of csv=print_section=0 input.mkv`: Same as before.
+
+This command in itself would print something like:
+```
+0.000000,K__
+0.160000,___
+0.101000,___
+```
+The first value is the presentation time and the second is the packet's flags. If the packet contains a keyframe, the flags starts with `K`. We can use this to filter it (and only print the first value) with awk:
+
+- `awk`: A pattern scanning and processing language (aka an underrated tool).
+- `-F','`: Set the field separator to `,`.
+- `/K/`: Filter only lines that contain `K`. This is `sed`'s syntax.
+- `{print $1}`: Print the first field (`$0` contains the whole line).
+
+</details>
 
 This command will output something like that:
 

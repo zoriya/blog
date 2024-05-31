@@ -1,4 +1,2 @@
-github.com/jpanther/congo/v2 v2.8.2 h1:UNg7225ZqLSt9zu0xBOh5iM9TXnuNG1Ta9eSsioHTEE=
-github.com/jpanther/congo/v2 v2.8.2/go.mod h1:1S7DRoO1ZYS4YUdFd1LjTkdyjQwsjFWd8TqSfz3Jd+M=
-github.com/nunocoracao/blowfish/v2 v2.68.0 h1:t6UNVY+EQgA5K3gLqnR/VLIxmjnbD7VpMyjW36T/C1c=
-github.com/nunocoracao/blowfish/v2 v2.68.0/go.mod h1:4SkMc+Ht8gpQCwArqiHMBDP3soxi2OWuAhVney+cuyk=
+github.com/zoriya/blowfish/v2 v2.68.1-0.20240531103729-9dc79407188a h1:ejXQJ3iUgk/b7OPGhbBQXVkPb1/BiP7oAl50u3/bt2k=
+github.com/zoriya/blowfish/v2 v2.68.1-0.20240531103729-9dc79407188a/go.mod h1:4SkMc+Ht8gpQCwArqiHMBDP3soxi2OWuAhVney+cuyk=

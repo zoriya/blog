@@ -21,3 +21,13 @@ article.relatedContentLimit = 3
 article.showHero = true
 article.heroStyle = "background"
 list.showSummary = false
+
+firebase.apiKey = "AIzaSyBjyI5DNQCdzfL0PEYXBhLgVujLG6_jA98"
+firebase.authDomain =  "blog-130d3.firebaseapp.com"
+firebase.projectId = "blog-130d3"
+firebase.storageBucket = "blog-130d3.appspot.com"
+firebase.messagingSenderId = "826830977480"
+firebase.appId = "1:826830977480:web:dfceeb22a45296838ea8fd"
+firebase.measurementId = "G-W0MTD9HDEG"
+article.showViews = true
+article.showLikes = true

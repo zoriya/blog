@@ -20,6 +20,7 @@ article.showTaxonomies = true
 article.showRelatedContent = true
 article.relatedContentLimit = 3
 article.showHero = true
+article.showComments = true
 article.heroStyle = "background"
 list.showSummary = false
 

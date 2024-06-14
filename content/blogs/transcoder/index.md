@@ -1,8 +1,7 @@
 ---
 title: "The challenge of writing a on-demand transcoder"
 description: ""
-date: 2024-04-12
-draft: true
+date: 2024-06-14
 tags: ["ffmpeg", "kyoo"]
 ---
 
@@ -132,7 +131,7 @@ ffmpeg -i input.mkv -map 0:V:0 -c:v libx264 \
 - `ffmpeg -i input.mkv -map 0:V:0 -c:v libx264`: same as the previous command
 
 - `-filter:v:0 scale=480:360`: Specify filter for the first video stream only, here we want to scale the video to 360p.
-- `-b:v:0 2400000`: Here we specify the bitrate of only the first video stream, with `v:0`
+- `-b:v:0 2400000`: Here we specify the bit rate of only the first video stream, with `v:0`
 
 - `-var_stream_map "v:0,name:360p v:1,name:480p v:2,name:720p"`: Specify names for each stream. This flag could also be used to tell ffmpeg to merge audio and video in the same segments files, for example by using `v:0,a:0,name:360pWithAudio`.
 - `-f hls output.m3u8`: Same as the previous command but this time, `output.m3u8` refers to the master playlist instead of the index one.
@@ -152,14 +151,14 @@ The master playlist we saw earlier is pretty simple (and human-readable!). We co
 ### First flaw
 
 What happens when you switch quality? Your player will fetch the index.m3u8 file for the new quality. Receiving this request, the server will start a new transcode and give back the index file.<br/>
-Let's pretend your client was playing the 150th segment at 5 min of your movie in 4k. Your internet connection gets worse and your client requests the version in 1080p. The transcode starts and your clients receives the newly created `index.m3u8`.<br/>
+Let's pretend your client was playing the 150th segment at 5 min of your movie in 4k. Your internet connection gets worse and your client requests the version in 1080p. The transcoder starts, and your clients receives the newly created `index.m3u8`.<br/>
 Since transcoding has just started, it might only have 50 segments in it. Your player will not be able to request the segment 150 of the new quality (since it does not exist in the `index.m3u8` yet) and start playing at the 45th segment (to keep a margin from the stream tip).<br/>
 The user will now have to rewatch part of the movie or wait for the transcoder to catch up and manually seek.
 
 ![scenario-illustration.png](./scenario-paint.png "A schema of the scenario made with the help of paintjs.app")
 
 So how should we fix that? The obvious idea is to start the new encode directly at the requested segment, so users don't have to wait.<br/>
-While the idea is pretty simple, actually implementing it is a lot harder. First, you want to start the transcode at a specific segment, but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. It's illegal to do so and the player would not be able to seek before in the video.
+While the idea is pretty simple, actually implementing it is a lot harder. First, you want to start to transcode at a specific segment, but you don't know the start time in seconds of that segment. And even if we knew the start time of the segment, we can't simply remove previous segments from the index.m3u8 file. It's illegal to do so and the player would not be able to seek before in the video.
 
 ### Alignments
 
@@ -170,7 +169,7 @@ In truth, HLS has another rule: each variant needs to have their segments aligne
 You can see that each segment is aligned: they start and end at exactly the same time in all variants. This makes it easy to switch quality/variant at any point (as illustrated by the arrows).
 
 In ffmpeg, we can either use `-segment_time` to specify a single length for all segments, or we can use `-segment_times` and specify an array of length with one value per segment.<br/>
-If we tried to run a ffmpeg command with this flags, you would quickly notice an issue: segments are not at the right duration! This is because a segment must start with a keyframe (the `IDR` in the previous illustration).
+If we tried to run a ffmpeg command with this flag, you would quickly notice an issue: segments are not at the right duration! This is because a segment must start with a keyframe (the `IDR` in the previous illustration).
 
 While we can manually create keyframes at the start of segment when we transcode (using the `-force_key_frames` flag), we have no control over keyframes when we transmux (keep the original video stream). This means we could have a HLS setup like this:
 
@@ -196,7 +195,7 @@ So we absolutely need to allow playback of the original video stream, where we h
 There is only one way to align the original video stream with the transcoded stream: giving up control on fixed segments length and aligning on the original keyframes. Since we can control the transcoded's stream keyframe, we can put them at the same times as the original's stream keyframes.<br/>
 This means we can't simply create a keyframe/segment every 4s, we need to scan the whole video to extract keyframes timestamps and create a new segment only on one of those timestamps.
 
-When creating the hls stream from the original video stream, we simply cut segments at a previously extracted keyframes. For transcoded stream, we force keyframes and segments cut exactly like before but we use the original's video keyframes as a reference.
+When creating the HLS stream from the original video stream, we simply cut segments at a previously extracted keyframes. For transcoded stream, we force keyframes and segments cut exactly like before, but we use the original's video keyframes as a reference.
 
 To extract keyframes from a video file, we can use ffprobe, a tool that ships with ffmpeg. The following command gives keyframes:
 
@@ -212,10 +211,10 @@ ffprobe -loglevel error \
 
 - `ffprobe`
 - `-loglevel error`: Disable file's metadata printing, we don't need those.
-- `-skip_frame nokey`: Skip non-keyframe. We only want to print keyframes time so we don't need the other frames.
+- `-skip_frame nokey`: Skip non keyframe. We only want to print keyframes time, so we don't need the other frames.
 - `-select_streams v:0`: Only read the first video stream, like the `-map` of `ffmpeg`
 - `-show_entries frame=pts_time`: Only print the presentation time of frames: the timestamp when the frame should be seen. Frames are not always sorted in presentation order (for examples with b-frames) and don't always have the same duration.
-- `-of csv=print_section=0`: Set the output format to csv and ask it to print the content of the first section (`frame`). Without the `=print_section=0` it would print something like `frame,2.0002`.
+- `-of csv=print_section=0`: Set the output format to CSV and ask it to print the content of the first section (`frame`). Without the `=print_section=0` it would print something like `frame,2.0002`.
 - `input.mkv`: The input file.
 
 </details>
@@ -268,7 +267,7 @@ This command will output something like that:
 22.022000
 ```
 
-in a few seconds. We can use that before starting a transcode to know where we should cut segments.
+in a few seconds. We can use that before starting to transcode to know where we should cut segments.
 
 {{< alert "note" >}}
 
@@ -280,7 +279,7 @@ Kyoo actually start transcoding before every keyframes could be retrieved since 
 
 You now have a good idea of how streams can be created. The transcoder's job is also to keep and manage state to handle multiples users that can seek or change files, but that's not the point of this blog.
 
-Another important point about video transcoding is the difference between each format/setup. Ffmpeg handle almost every case, but it always has some quirks or obscure flags.<br/>
+Another important point about video transcoding is the difference between each format/setup. ffmpeg handle almost every case, but it always has some quirks or obscure flags.<br/>
 For example, hardware acceleration, aka using your graphics card for faster transcode is one of them. Not because it's hard per se since ffmpeg abstracts this for us. It's hard because it adds edge cases. To give a simple example, the `-force_keyframes` option that we used to create an IDR frame at every given timestamp does not create IDR frames when using CUDA (Nvidia's hardware acceleration). The frame created is still an I-frame, so it's not a bug in ffmpeg but this results in an invalid HLS stream. For this specific case, we need to use the `-force_idr 1` option that, to my knowledge, only CUDA specific encoders read.
 
 I iterated a lot on this transcoder, my first implementation was written in C and used ffmpeg's library directly (this was also my first C and low level project, I had never heard of a pointer before). Everybody told me this was a bad idea and I should just create a node process that would call ffmpeg. While this was the right call if I wanted to quickly create a transcoder, learning to read the ffmpeg's source code and how it worked inside gave me lots of insights. Insights I still use today when working in today's transcoder, after rewriting everything in Rust and then in Go. Each rewrite originated from perspective shift on how to process state and streams, leading to the current implementation that finally archived every goal.
@@ -290,7 +289,7 @@ Kyoo's transcoder also has other features that resolve around video like extract
 
 It's still a moving project with new features coming, but the core transcoding process is done and fully working! The next feature that will probably come is intro/outro detection using audio fingerprints.
 
-This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider sharing it or staring [Kyoo](https://github.com/zoriya/kyoo) on github.
+This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider sharing it or staring [Kyoo](https://github.com/zoriya/kyoo) on GitHub.
 
 <!-- vim: set wrap: -->
 

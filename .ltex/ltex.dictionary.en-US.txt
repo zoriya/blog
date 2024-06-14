@@ -1,0 +1,10 @@
+Kyoo
+transmuxing
+ffmpeg
+transcoder
+keyframe
+keyframes
+transmux
+ffprobe
+awk
+CUDA

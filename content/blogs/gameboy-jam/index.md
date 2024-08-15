@@ -54,11 +54,14 @@ Here's the same board but in text & English:
 
 Turns out we overestimated the difficulty of the thing, we made a playable POC before going home (at 2am).
 
+### CPU stuff
+
 It might sound complicated, but you don't have much to understand in order to write code. We have less than 256 instructions. Once you dedup via parameters (because `increment register a` is a different instruction than `increment register b`), you end up with only 44 instruction types (and that's counting the 13 bitshift instructions & the 7 interrupt instruction [like `stop` that stops the CPU]).
 
 ![instruction list](./opcodes.jpg "The grid of all instruction available")
 
-The game boy doesn't have an OS. This means you don't have to deal with syscalls or to share memory. Allocating memory become easier:
+<br>
+The gameboy doesn't have an OS. This means you don't have to deal with syscalls or to share memory. Allocating memory become easier:
 
  - You look at `constant.asm` which can look like (note that `$` means hexadecimal):
 
@@ -80,9 +83,23 @@ The game boy doesn't have an OS. This means you don't have to deal with syscalls
 
 Jokes aside, this means you can write at any arbitrary addresses so your struct or variables are just magic addresses.
 
-This logic is applied everywhere, since everything is memory mapped. 
+<br>
+This logic is applied everywhere, since everything is memory mapped.
 
-There's no GPU or fancy graphic system, the gameboy (and most consoles of the time) had a PPU instead: a `Picture Processing Unit`. This thing can display sprite, background and even has palettes/colors if you are on a gameboy color. 
+![memory map](./mmap.png "Memory map of the gameboy")
+
+You are probably used to see address and assume that it's a somewhere on the RAM. This is not true for the gameboy, addresses between `$C000` and `$DFFF` are in RAM. The others are somewhere else (others addresses can also refer to the ram as you can see from the table above).
+
+If you want to read an asset from your game cartridge, you can just use an address between `$0000` and `$3FFF`. There is no file syscall or anything like that.
+
+
+### PPU stuff
+
+There's no GPU or fancy graphic system, the gameboy (and most consoles of the time) had a PPU instead: a `Picture Processing Unit`. This thing can display sprite, background and even palettes/colors if you are on a gameboy color.
+
+This works by interpreting the VRAM as tiles.
+
+![tiles](./tiles.jpg "debugger showing tiles")
 
 
 ### Cool stuff

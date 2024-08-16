@@ -97,9 +97,53 @@ If you want to read an asset from your game cartridge, you can just use an addre
 
 There's no GPU or fancy graphic system, the gameboy (and most consoles of the time) had a PPU instead: a `Picture Processing Unit`. This thing can display sprite, background and even palettes/colors if you are on a gameboy color.
 
-This works by interpreting the VRAM as tiles.
+This works by interpreting the VRAM as tiles of 8x8 pixels with a color depth of 4 colors/gray shade.
 
 ![tiles](./tiles.jpg "debugger showing tiles")
+
+You can then place those tiles in 3 different ways:
+ - either as part of the background
+ - as a floating sprite on top of the background (but you can't have only 3 colors that way since one is transparent)
+ - as an overlay of both called the `window`
+
+I'll start by explaining sprites. We can place up to 40 tiles wherever we want on the screen. To instruct the PPU to draw sprites, a special part of the memory called `OAM` (meaning `Object Attribute Memory`) is used (between `$FE00` and `$FE9F`).
+
+You can imagine this memory to just be an array of properties. In C it would look like that:
+
+```c
+typedef struct object_attribute {
+    uint8_t y;
+    uint8_t x;
+    uint8_t tile_number;
+    flags_t flags;
+} object_attribute_t;
+
+object_attribute_t oam[40] = 0xFE00;
+```
+
+The `tile_number` is just the index of tile you want to display. There are some flags to flip the tiles or other things, but it's mostly used on the gameboy color to specify color palettes.
+
+![oam](./oam.jpg "debugger showing the oam")
+
+Next up are the background and window!
+
+
+![background](./bg-debug.jpg "debugger showing the background")
+
+Here you can see the whole background of the game. A 32x32 grid of tiles (so 256x256 pixels). To know which tiles to display, the PPU simply look at a part of the VRAM we call the `Background Tile Map` (from `$8000` to `$8FFF`). Each byte is simply the id/index of the tile you want to display.
+
+We can move the camera over this background by setting the `SCX` and `SCY` registers (aka `scroll x` and `scroll y`). The camera will show a 160x144 pixel area and will wrap around the background if necessary (if part of the background goes off-screen, it will appear on the opposite side of the screen).
+
+{{< alert "note" >}}
+
+You might have guessed but the `SCX` and `SCY` registers are of course memory mapped, meaning to set them you just need to write at `$FF43` and `$FF42` respectively. In c, it would be something like:
+
+```c
+uint8_t *scroll_x = 0xFF43;
+*scrool_x = 12; // set scrool to 12 (or whatever value you want)
+```
+
+{{< /alert >}}
 
 
 ### Cool stuff

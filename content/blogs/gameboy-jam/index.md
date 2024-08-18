@@ -14,26 +14,22 @@ This is some context to explain why we decided to make a gameboy game and a bit 
 
 ### Introduction
 
-Quickly after starting college, I made some friends in my year group and some who were already in the 3rd year of college. All courses in the first year of my college were in C and the second year contained lot of C, C++ and one assembly course. It was common for students to have low-level side projects. My friends in 3rd year were doing a gameboy emulator.
-
-It looked incredibly fun, they would barge in the room with their laptop in hand like "LOOK IT WORKS" and you would see a Pikachu in the screen, saying a BAURHAU because the sound system was broken.
+All courses in the first year of my college were in C so it was common for students to have low-level side projects. Some friends two years older were doing a gameboy emulator. It looked incredibly fun, they would barge in the room with their laptop in hand like "LOOK IT WORKS" and you would see a Pikachu in the screen, saying a BAURHAU because the sound system was broken.
 
 ![Pokemon yellow](./pokeyellow.jpg "Imagine Pikachu saying BAURHAU instead of PIKA")
 
-Naturally, with friends of our year we decided to also make an emulator: a SNES one. This project is completely unrelated to this story, but that's how we learned how assembly & retro games worked. While this was not the same CPU, we made a disassembly and implemented instructions, learned about DMA & some hacks that games abused to run on limited hardware. Btw if you're interested, checkout [Retro Game Mechanics Explained](https://www.youtube.com/@RGMechEx) on youtube, especially his [SNES series](https://www.youtube.com/playlist?list=PLHQ0utQyFw5KCcj1ljIhExH_lvGwfn6GV) which is phenomenal.
+Naturally, I was hyped and decided to also make an emulator with some friends: a SNES one. This project is completely unrelated to this story, but that's how we learned how assembly & retro games worked. While this was not the same CPU, we made a disassembly and implemented instructions, learned about DMA & some hacks that games abused to run on limited hardware. Btw if you're interested, checkout [Retro Game Mechanics Explained](https://www.youtube.com/@RGMechEx) on youtube, especially his [SNES series](https://www.youtube.com/playlist?list=PLHQ0utQyFw5KCcj1ljIhExH_lvGwfn6GV) which is phenomenal.
 
 ### Why a gameboy game?
 
-We had a teacher that pushed us to do as much crazy stuff as possible (that's how I ended up making a xml parser in C for a game project...) Since the game jam war organized by the school, he started teasing our friends saying stuff like "for the game jam, you're going to make a gameboy game, right?". Of course, he was not serious, but the idea was already growing in our heads. We decided to make this game with our group of 6 (4 3rd year that did the gameboy emulator and me & a friend who did the snes emulator). One of us thought this would be a huge failure and refused to work on the asm side. He instead thought it would be cool to make a real cartridge that could run roms in a real hardware.
-
-## Space shooter
-
-### Initial goal
+We had a teacher that pushed us to do as much crazy stuff as possible (that's how I ended up making a xml parser in C for a game project...) Since the game jam war organized by the school, he started teasing our friends saying stuff like "for the game jam, you're going to make a gameboy game, right?". Of course, he was not serious, but the idea was already growing in our heads. We decided to make this game with our group of 6. One of us thought this would be a huge failure and refused to work on the asm side. He instead thought it would be cool to make a real cartridge that could run roms in a real hardware.
 
 The game jam started, we had a weekend to make our game. The theme was announced a Friday at 18h, and we needed to make a keynote/presentation of the game on the Monday morning (even if we failed). We had access to everything in the school 24/24, even the electronics stuff. The theme for this jam was `Space`.
 
 Since we wanted to make the simplest game possible, it didn't take us long (approximately 10ms) to settle on the game idea: a space shooter.
-> On a side note, I don't think we ever decided something this quickly :3
+
+
+### Space shooter
 
 We wrote on a whiteboard what we wanted to do and started working. At the end of the weekend, the board looked like this:
 
@@ -53,6 +49,8 @@ Here's the same board but in text & English:
 |                                       | {{< icon "check" >}} Score     |           |
 
 Turns out we overestimated the difficulty of the thing, we made a playable POC before going home (at 2am).
+
+## How does it work
 
 ### CPU stuff
 
@@ -146,12 +144,80 @@ uint8_t *scroll_x = 0xFF43;
 {{< /alert >}}
 
 
-### Cool stuff
+This means, we can fake a moving spaceship by simply placing a sprite in the middle of the screen and changing the scroll registers.
 
-## Break the target
+<video src="scroll.mp4" controls>
+</video>
 
-### Oh shit
+In this video, you can see the game on the right and the complete background rendered on the left. The box you can see moving is the camera's viewport (it moves because we are incrementing the `SCY` register).
 
-### But wait
+You already know how the spaceship is drawn, but we haven't talked yet how we are drawing the score! That's where the `window` comes into play. The window is basically another background that overlaps the default background. We can specify an offset from the top left corner (using the `WX` and `WY`) registers to prevent covering completely the background. We just specified to draw tiles that represent `0` on there.
+
+## Cool parts
+
+Now that you have an overview of how the gameboy works, I'm going to explain how some components work.
+
+### Asteroids & random
+
+To generate obstacles, we need a pseudo random number generator. And of course, no such thing exists on a gameboy. To remediate this, we can use the timing registers that are available. For example, the divide register `DIV` is just a value at `$FF04` that gets incremented automatically (at a rate of 16384Hz if you want details).
+
+We can use it to make a little function like
+
+```asm
+; Generates a pseudo random number.
+; Params:
+;    None
+; Return:
+;    a -> The number generated
+; Registers:
+;    af -> Not preserved
+;    bc -> Preserved
+;    de -> Preserved
+;    hl -> Preserved
+random::
+	push hl
+
+	ld a, [RANDOM_REGISTER]
+	ld hl, DIV_REGISTER
+	add a, [hl]
+	ld [RANDOM_REGISTER], a
+
+	pop hl
+	ret
+```
+
+In pseudo code, this can look like:
+
+```rust
+// The value at this address is the `DIV` register. It gets automatically incremented.
+u8 *DIV = 0xFF04;
+// Just a global that is stored in the RAM.
+u8* RANDOM = 0xC003;
+
+fn random() {
+  let old_hl = register.hl;
+  
+  registers.a = *RANDOM;
+  registers.hl = DIV;
+
+  // Adds to a the value of the `DIV` register.
+  regsiter.a += *registers.hl;
+
+  // Update the random register so we can use it next time.
+  *RANDOM = registers.a;
+
+  // Restore the HL register. This way other functions don't need to worry about
+  // losing what's inside.
+  register.hl = old_hl;
+}
+```
+
+I'll skip the asteroid & collisions detection logic that is pretty basic and let you experience the game at the end.
+
+### Score
+
+
 
 ## Conclusion
+
+<!-- vim: set wrap: -->

@@ -3,7 +3,7 @@ title: "A game(boy jam) story"
 description: ""
 series: ["A game(boy jam) story"]
 series_order: 1
-date: 2024-08-15
+date: 2024-08-20
 tags: ["gameboy", "asm", "school", "gamejam"]
 ---
 

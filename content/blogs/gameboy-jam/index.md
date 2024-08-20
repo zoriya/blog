@@ -5,7 +5,6 @@ series: ["A game(boy jam) story"]
 series_order: 1
 date: 2024-08-15
 tags: ["gameboy", "asm", "school", "gamejam"]
-draft: true
 ---
 
 I recently mentioned on Twitter that I made a gameboy game with some friends during my first year of college. Since there's some cool stuff to showcase, here's a blog about it!

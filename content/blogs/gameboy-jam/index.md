@@ -1,6 +1,8 @@
 ---
 title: "A game(boy jam) story"
 description: ""
+series: ["A game(boy jam) story"]
+series_order: 1
 date: 2024-08-15
 tags: ["gameboy", "asm", "school", "gamejam"]
 draft: true
@@ -286,7 +288,7 @@ writeNumber::
 
 ## Conclusion
 
-I'm pretty happy of what we managed to archive in a single week-end with this game! We managed to make a super polished space shooter with an introduction cinematic, a boss & some cool music!
+I'm pretty happy of what we managed to achieve in a single week-end with this game! We managed to make a super polished space shooter with an introduction cinematic, a boss & some cool music!
 
 Also, I said earlier that we thought it would be cool to play our game on real hardware. So we did:
 
@@ -298,6 +300,10 @@ Also, I said earlier that we thought it would be cool to play our game on real h
 It's our very own cartridge that reads the game from an EEPROM. The right image shows the game that segfault!
 
 > As said previously, segfault is not possible on the gameboy but we made a security mechanism when we jump at a weird place in memory to help us debug. This is this security screen that you are seeing in this image.
+
+This catridge can also be used to play on a SNES by using the Super GameBoy!
+
+![super-gameboy](./super-gameboy.png "Setup to run the game on the Super GameBoy")
 
 You can play the game here:
 

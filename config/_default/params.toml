@@ -18,6 +18,7 @@ article.showWordCount = false
 article.showAuthorBottom = true
 article.showTaxonomies = true
 article.showRelatedContent = true
+article.seriesOpened = true
 article.relatedContentLimit = 3
 article.showHero = true
 article.showComments = true

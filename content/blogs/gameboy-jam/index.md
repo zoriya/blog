@@ -306,7 +306,7 @@ This catridge can also be used to play on a SNES by using the Super GameBoy!
 
 You can play the game here:
 
-<iframe title="Turbo Space Shooter" width="100%" style="aspect-ratio: 160/144;" allowfullscreen="true" src="https://wasmboy.app/iframe/?rom-url=./space_shooter.gbc&rom_name=TurboSpaceShooter"> </iframe>
+<iframe title="Turbo Space Shooter" width="100%" style="aspect-ratio: 160/144;" allowfullscreen="true" src="https://wasmboy.app/iframe/?rom-url=https://zoriya.dev/blogs/gameboy-jam/space_shooter.gbc&rom_name=TurboSpaceShooter"> </iframe>
 
 Directions: WASD or arrows \
 Start: Enter \

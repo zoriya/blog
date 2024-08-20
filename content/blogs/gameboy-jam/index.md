@@ -10,7 +10,7 @@ I recently mentioned on Twitter that I made a gameboy game with some friends dur
 
 ## Context
 
-This is some context to explain why we decided to make a gameboy game and a bit of background, if you don't care feel free to directly skip to [the first paragraph](#space-shooter).
+This is some context to explain why we decided to make a gameboy game and a bit of background, if you don't care feel free to directly skip to [the first paragraph](#how-does-it-work).
 
 ### Introduction
 
@@ -186,10 +186,11 @@ random::
 	ret
 ```
 
-In pseudo code, this can look like:
+In pseudocode, this can look like:
 
 ```rust
-// The value at this address is the `DIV` register. It gets automatically incremented.
+// The value at this address is the `DIV` register.
+// It gets automatically incremented.
 u8 *DIV = 0xFF04;
 // Just a global that is stored in the RAM.
 u8* RANDOM = 0xC003;
@@ -206,8 +207,8 @@ fn random() {
   // Update the random register so we can use it next time.
   *RANDOM = registers.a;
 
-  // Restore the HL register. This way other functions don't need to worry about
-  // losing what's inside.
+  // Restore the HL register.
+  // This way other functions don't need to worry about losing it
   register.hl = old_hl;
 }
 ```
@@ -216,8 +217,113 @@ I'll skip the asteroid & collisions detection logic that is pretty basic and let
 
 ### Score
 
+Displaying a score might sounds like a very simple feature, but there's more than meets the eyes.
 
+Since the gameboy doesn't have a default font, you need to have tiles for number & letters. We placed them in the VRAM with the same offset as ASCII letters and numbers to have a simple way of displaying strings (you can see this in the tile viewer in the [#ppu-stuff](#ppu-stuff) section). This system allows a simple way to display strings but what about numbers? The obvious way would be to have a recursive function like:
+
+```rust
+fn write_number(number: u8) {
+  if number > 10 {
+    write_number(number / 10)
+  }
+  write('0' + number % 10);
+}
+```
+
+There's just a little problem with this approach: the gameboy **doesn't have divisions** (nor multiplications btw). 
+
+When we want a number to be displayed we instead store the number in BCD (Binary-Codec Decimal) format. This format stores each digit of a decimal number in 4 bits. Meaning `45` (in decimal) would be stored as 4 (so `0b0100`) and 5 (so `0b0101`). Since we work with 8 bits values, we can store two digits per value so `45` becomes `0b0100_0101`, coincidentally this number is represented as `$45` in hexadecimal.
+
+To manipulate BCD numbers, the gameboy has a `DAA` instruction that we can use after an arithmetic instruction to convert our register back to a BCD number. Here's an example:
+
+```asm
+ld a, $19 ; equivalent of a = 0x19 (19 being a BCD number)
+add a, $3 ; equivalent of a += 3
+; now, a = 0x1C.
+daa ; fixes our register `a` for it to become a BCD number again
+; now, a = 0x22
+```
+
+Now that all the numbers we want to display are in BCD format, displaying them become trivial.
+
+<details>
+
+<summary>
+    Here is an example implementation of a write number function.
+</summary>
+
+```asm
+; Write the number in `a` to the address `de` (in ascii)
+; Params:
+;    a -> The number to print
+;    de -> The address where to write the ascii output (first digit at de, second digit at de+1)
+; Return:
+;    de -> Modified address to continue writing (you can call writeNumber again w/ a new `a` value to continue writing)
+; Registers:
+;    af -> Not preserved
+;    b  -> Not preserved
+;    c  -> Preserved
+;    de -> Not preserved
+;    hl -> Preserved
+writeNumber::
+    ld b, a
+
+    swap a
+    and a, $F
+    add a, '0'
+    ld [de], a
+    inc de
+
+    ld a, b
+    and a, $F
+    add a, '0'
+    ld [de], a
+    inc de
+    ret
+```
+
+</details>
 
 ## Conclusion
+
+I'm pretty happy of what we managed to archive in a single week-end with this game! We managed to make a super polished space shooter with an introduction cinematic, a boss & some cool music!
+
+Also, I said earlier that we thought it would be cool to play our game on real hardware. So we did:
+
+{{< gallery >}}
+  <img src="./cartridge.jpg" class="grid-w50" />
+  <img src="./game.jpg" class="grid-w50" />
+{{< /gallery >}}
+
+It's our very own cartridge that reads the game from an EEPROM. The right image shows the game that segfault!
+
+> As said previously, segfault is not possible on the gameboy but we made a security mechanism when we jump at a weird place in memory to help us debug. This is this security screen that you are seeing in this image.
+
+You can play the game here:
+
+<iframe title="Turbo Space Shooter" width="100%" style="aspect-ratio: 160/144;" allowfullscreen="true" src="https://wasmboy.app/iframe/?rom-url=./space_shooter.gbc&rom_name=TurboSpaceShooter"> </iframe>
+
+Directions: WASD or arrows \
+Start: Enter \
+Select: Shift \
+Shoot (B): X or Backspace
+
+This embed is running thanks to [wasmboy](https://github.com/torch2424/wasmboy)! If it doesn't work, you can also play the game from [here](https://pinkysmile.github.io/SpaceShooterGB/play).
+<br/>
+<br/>
+
+We actually made another gameboy game in another game jam later that year. This second game is a platformer and is a way harder technical feat (for reasons I'm not going to disclose until a part 2 of this blog).
+
+So go make gameboy games, it's fun and not that hard! See you for part 2!
+
+
+## References
+
+Resources that helped us make the game or that I used to refresh my memory for this blog:
+
+- Specification: https://bgb.bircd.org/pandocs.htm
+- Explanations: https://gbdev.io/pandocs/
+- Opcode grid: https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
+- Tetris disassembly: https://github.com/osnr/tetris/tree/master
 
 <!-- vim: set wrap: -->

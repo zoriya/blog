@@ -10,7 +10,7 @@ headline = "I'm not a dev, I'm a sorceress."
 bio = "I work on [Kyoo](https://github.com/zoriya/kyoo) or other nerdy projects at night."
 links = [
 	{ github = "https://github.com/zoriya" },
-	{ linkedin = "https://www.linkedin.com/in/zoe-roux/" },
 	{ twitter = "https://twitter.com/zoriya_dev" },
+	{ linkedin = "https://www.linkedin.com/in/zoe-roux/" },
 	{ rss = "https://zoriya.dev/index.xml" },
 ]

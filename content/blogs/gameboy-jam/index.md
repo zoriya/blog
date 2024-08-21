@@ -23,7 +23,7 @@ Naturally, I was hyped and decided to also make an emulator with some friends: a
 
 ### Why a gameboy game?
 
-We had a teacher that pushed us to do as much crazy stuff as possible (that's how I ended up making a xml parser in C for a game project...) Since the game jam war organized by the school, he started teasing our friends saying stuff like "for the game jam, you're going to make a gameboy game, right?". Of course, he was not serious, but the idea was already growing in our heads. We decided to make this game with our group of 6. One of us thought this would be a huge failure and refused to work on the asm side. He instead thought it would be cool to make a real cartridge that could run roms in a real hardware.
+We had a teacher that pushed us to do as much crazy stuff as possible (that's how I ended up making a xml parser in C for a game project...) Since the game jam was organized by the school, he started teasing our friends saying stuff like "for the game jam, you're going to make a gameboy game, right?". Of course, he was not serious, but the idea was already growing in our heads. We decided to make this game with our group of 6. One of us thought this would be a huge failure and refused to work on the asm side. He instead thought it would be cool to make a real cartridge that could run roms in a real hardware.
 
 The game jam started, we had a weekend to make our game. The theme was announced a Friday at 18h, and we needed to make a keynote/presentation of the game on the Monday morning (even if we failed). We had access to everything in the school 24/24, even the electronics stuff. The theme for this jam was `Space`.
 
@@ -139,7 +139,9 @@ You might have guessed but the `SCX` and `SCY` registers are of course memory ma
 
 ```c
 uint8_t *scroll_x = 0xFF43;
-*scrool_x = 12; // set scrool to 12 (or whatever value you want)
+*scrool_x = 12;
+// set scroll to 12
+// (or whatever value you want)
 ```
 
 {{< /alert >}}

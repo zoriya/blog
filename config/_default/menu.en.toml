@@ -4,6 +4,12 @@
   weight = 10
 
 [[main]]
+  name = "Posts"
+  pageRef = "posts"
+  weight = 10
+
+
+[[main]]
   name = "Tags"
   pageRef = "tags"
   weight = 10
@@ -18,6 +24,11 @@
 [[footer]]
   name = "Blogs"
   pageRef = "blogs"
+  weight = 20
+
+[[footer]]
+  name = "Posts"
+  pageRef = "posts"
   weight = 20
 
 [[footer]]

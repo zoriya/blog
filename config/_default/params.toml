@@ -5,6 +5,7 @@ enableCodeCopy = true
 smartTOC = true
 robots = "all"
 dateFormat = "2006-01-02"
+mainSections = ["blogs", "posts"]
 
 homepage.layout = "profile"
 homepage.showRecent = true

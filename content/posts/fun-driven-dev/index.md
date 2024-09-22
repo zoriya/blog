@@ -2,7 +2,6 @@
 title: "Fun driven development"
 description: ""
 date: 2024-09-22
-draft: true
 tags: ["tools", "rent"]
 ---
 

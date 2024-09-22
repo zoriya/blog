@@ -1,3 +1,11 @@
+---
+title: "Fun driven development"
+description: ""
+date: 2024-09-22
+draft: true
+tags: ["short", "tools"]
+---
+
 
 I use a lot of nerdy tools (linux, nix, river), some tools also have a steep learning curve (vim, dvorak). I also type on this:
 ![]()

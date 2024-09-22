@@ -1,3 +1,11 @@
+---
+title: "Nix"
+description: ""
+date: 2024-09-22
+draft: true
+tags: ["nix", "tools"]
+---
+
 This are my thoughts about nix, a tool I use & love, that I don't recommend.
 
 

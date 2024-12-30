@@ -11,3 +11,5 @@ CUDA
 syscall
 syscalls
 alloced
+webdev
+NaN

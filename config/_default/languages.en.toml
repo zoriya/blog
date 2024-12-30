@@ -3,7 +3,7 @@ title = "Zoe's blog"
 [params]
 # logo = "img/author.png"
 
-[author]
+[params.author]
 name = "Zoe Roux"
 image = "img/author.png"
 headline = "I'm not a dev, I'm a sorceress."

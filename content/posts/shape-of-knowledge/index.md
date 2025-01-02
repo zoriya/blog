@@ -1,7 +1,7 @@
 ---
 title: "The shape of knowledge"
 description: ""
-date: 2024-12-11
+date: 2024-12-30
 tags: []
 ---
 

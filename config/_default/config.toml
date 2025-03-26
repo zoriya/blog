@@ -1,10 +1,12 @@
 baseURL = 'https://zoriya.dev/'
 languageCode = 'en'
-paginate = 50
 enableRobotsTXT = true
 googleAnalytics = "G-KK12E7TNEC"
 enableEmoji = true
 titleCaseStyle = 'none'
+
+[pagination]
+pagerSize = 50
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]

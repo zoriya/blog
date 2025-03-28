@@ -1,10 +1,10 @@
 FROM oven/bun
 WORKDIR /app
 
-COPY package.json bun.lock .
+COPY package.json bun.lock ./
 RUN bun install --production
 
-COPY index.ts tsconfig.json .
+COPY index.ts tsconfig.json ./
 
 ENV NODE_ENV=production
 RUN bun build \

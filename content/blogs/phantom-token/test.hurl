@@ -10,3 +10,5 @@ HTTP 200
 [Asserts]
 jsonpath "$['sub']" == "pina"
 jsonpath "$['iss']" == "keibi-blog"
+jsonpath "$['exp']" toString toDate "%s" daysAfterNow <= 1
+jsonpath "$['iat']" toString toDate "%s" daysBeforeNow == 0

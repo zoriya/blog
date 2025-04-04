@@ -5,6 +5,8 @@ googleAnalytics = "G-KK12E7TNEC"
 enableEmoji = true
 titleCaseStyle = 'none'
 
+ignoreFiles = [".*/node_modules/.*"]
+
 [pagination]
 pagerSize = 50
 

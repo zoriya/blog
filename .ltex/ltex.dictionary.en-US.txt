@@ -13,3 +13,6 @@ syscalls
 alloced
 webdev
 NaN
+perf
+kyoo
+SPOF

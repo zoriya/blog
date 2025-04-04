@@ -1,2 +1,4 @@
 {"rule":"GAMEBOY","sentence":"^\\QI recently mentioned on Twitter that I made a gameboy game with some friends during my first year of college.\\E$"}
 {"rule":"YOUTUBE","sentence":"^\\QBtw if you're interested, checkout Retro Game Mechanics Explained on youtube, especially his SNES series which is phenomenal.\\E$"}
+{"rule":"A_INFINITIVE","sentence":"^\\QThe API that enqueues the compute could return you a jwt allowing you to access progress/results of said task.\\E$"}
+{"rule":"A_INFINITIVE","sentence":"^\\QThe API that enqueues the compute could return you a JWT allowing you to access progress/results of said task.\\E$"}

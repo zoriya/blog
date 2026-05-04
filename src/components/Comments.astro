@@ -1,0 +1,52 @@
+<div id="utterances-comments"></div>
+
+<script>
+  function getUtterancesTheme() {
+    return document.documentElement.classList.contains("dark")
+      ? "github-dark"
+      : "github-light";
+  }
+
+  function loadUtterances() {
+    const container = document.getElementById("utterances-comments");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const script = document.createElement("script");
+    script.src = "https://utteranc.es/client.js";
+    script.setAttribute("repo", "zoriya/blog");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", getUtterancesTheme());
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+    container.appendChild(script);
+  }
+
+  function updateUtterancesTheme() {
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      ".utterances-frame"
+    );
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage(
+        { type: "set-theme", theme: getUtterancesTheme() },
+        "https://utteranc.es"
+      );
+    }
+  }
+
+  loadUtterances();
+
+  const toggle = document.getElementById("theme-toggle");
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      // Delay slightly so dark class flips first
+      setTimeout(updateUtterancesTheme, 100);
+    });
+  }
+
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (localStorage.getItem("theme") === "system") {
+      setTimeout(updateUtterancesTheme, 100);
+    }
+  });
+</script>

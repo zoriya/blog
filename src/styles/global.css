@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+@custom-variant prose-inline-code (&.prose
+	:where(:not(pre) > code):not(:where([class~="not-prose"] *)));
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--color-surface: #eff1f5;
+	--color-surface-alt: #e6e9ef;
+	--color-fg: #4c4f69;
+	--color-fg-secondary: #5c5f77;
+	--color-fg-muted: #9ca0b0;
+	--color-accent: #8839ef;
+	--color-accent-hover: #b4befe;
+	--color-border: #dce0e8;
+	--color-link: #1e66f5;
+}
+
+@variant dark {
+	--color-surface: #1e1e2e;
+	--color-surface-alt: #181825;
+	--color-fg: #cdd6f4;
+	--color-fg-secondary: #bac2de;
+	--color-fg-muted: #6c7086;
+	--color-accent: #cba6f7;
+	--color-accent-hover: #b4befe;
+	--color-border: #313244;
+	--color-link: #89b4fa;
+}
+
+html.dark .astro-code,
+html.dark .astro-code span {
+	color: var(--shiki-dark) !important;
+	background-color: var(--shiki-dark-bg) !important;
+}
+
+.prose :where(svg):not(:where([class~="not-prose"] *)) {
+	display: inline-block;
+	vertical-align: -0.125em;
+	white-space: nowrap;
+}

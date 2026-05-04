@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PostCard from "../components/PostCard.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+	title: string;
+	description?: string;
+	items: CollectionEntry<"blogs" | "posts">[];
+}
+
+const { title, description, items } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} currentPath={Astro.url.pathname}>
+  <section class="pt-4">
+    <h2 class="mt-8 text-2xl font-extrabold mb-10 text-fg">
+      {title}
+    </h2>
+    <section class="space-y-10 w-full">
+      {items.map((item) => (
+        <PostCard post={item} />
+      ))}
+    </section>
+  </section>
+</BaseLayout>

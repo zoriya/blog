@@ -1,0 +1,57 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  aria-label="Cycle theme"
+  class="text-base hover:text-accent transition-colors"
+>
+  <span class="hidden" aria-hidden="true" id="icon-system">
+    <Icon name="fa6-solid:desktop" class="w-5 h-5" />
+  </span>
+  <span class="hidden dark:inline" aria-hidden="true" id="icon-dark">
+    <Icon name="fa6-solid:moon" class="w-5 h-5" />
+  </span>
+  <span class="dark:hidden" aria-hidden="true" id="icon-light">
+    <Icon name="fa6-solid:sun" class="w-5 h-5" />
+  </span>
+</button>
+
+<script>
+  const stored = typeof localStorage !== "undefined" ? localStorage.getItem("theme") : null;
+  const sysPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+  const toggle = document.getElementById("theme-toggle");
+  const icons = ["system", "light", "dark"];
+
+  function applyTheme(t: string) {
+    const isDark = t === "dark" || (t === "system" && sysPrefersDark.matches);
+    document.documentElement.classList.toggle("dark", isDark);
+    localStorage.setItem("theme", t);
+    updateIcons(t);
+  }
+
+  function updateIcons(theme: string) {
+    document.getElementById("icon-system")!.classList.toggle("hidden", theme !== "system");
+    document.getElementById("icon-dark")!.classList.toggle("hidden", theme !== "dark");
+    document.getElementById("icon-light")!.classList.toggle("hidden", theme !== "light");
+  }
+
+  sysPrefersDark.addEventListener("change", () => {
+    if (localStorage.getItem("theme") === "system") {
+      applyTheme("system");
+    }
+  });
+
+  if (toggle) {
+    const initial = localStorage.getItem("theme") ?? "system";
+    updateIcons(initial);
+    toggle.addEventListener("click", () => {
+      const current = localStorage.getItem("theme") ?? "system";
+      const idx = icons.indexOf(current);
+      const next = icons[(idx + 1) % icons.length];
+      applyTheme(next);
+    });
+  }
+</script>

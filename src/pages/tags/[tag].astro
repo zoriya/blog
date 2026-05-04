@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import ListLayout from "../../layouts/ListLayout.astro";
+
+export async function getStaticPaths() {
+	const allBlogs = await getCollection("blogs", ({ data }) => !data.draft);
+	const allPosts = await getCollection("posts", ({ data }) => !data.draft);
+
+	const tagSet = new Set<string>();
+	for (const entry of [...allBlogs, ...allPosts]) {
+		for (const tag of entry.data.tags) {
+			tagSet.add(tag);
+		}
+	}
+
+	return Array.from(tagSet).map((tag) => ({
+		params: { tag },
+	}));
+}
+
+const { tag = "" } = Astro.params;
+
+const allBlogs = await getCollection("blogs", ({ data }) => !data.draft);
+const allPosts = await getCollection("posts", ({ data }) => !data.draft);
+
+const filtered = [...allBlogs, ...allPosts]
+	.filter((e) => e.data.tags.includes(tag))
+	.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<ListLayout
+  title={`#${tag} | Zoe's blog`}
+  description={`Posts tagged with ${tag}`}
+  items={filtered}
+/>

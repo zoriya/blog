@@ -1,0 +1,89 @@
+---
+import { Icon } from "astro-icon/components";
+import RecentPosts from "../components/RecentPosts.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const description =
+	"I work on Kyoo or other nerdy projects at night. I love weird tools (a keyboard that I designed myself, vim, tiling window manager like dwl or gaze). Feel free to reach out if you want to talk!";
+---
+
+<BaseLayout title="Zoe's blog" description={description} currentPath="/">
+  <article class="flex flex-col items-center justify-center text-center pt-8">
+    <header class="relative px-1 py-1 flex flex-col items-center mb-3">
+      <img
+        class="mb-2 rounded-full h-36 w-36 object-cover"
+        width="144"
+        height="144"
+        alt="Zoe Roux"
+        src="/img/author.png"
+      />
+      <h1 class="text-4xl font-extrabold text-fg">Zoe Roux</h1>
+      <h2 class="text-xl text-fg-secondary">
+        I&rsquo;m not a dev, I&rsquo;m a sorceress.
+      </h2>
+      <div class="mt-1 text-2xl">
+        <div class="flex flex-wrap text-fg-muted">
+          <a class="px-1 hover:text-accent transition-colors" href="https://github.com/zoriya" target="_blank" rel="me noopener noreferrer" aria-label="github">
+            <span class="inline-block align-text-bottom">
+              <span class="relative block">
+                <Icon name="fa-brands:github" class="w-5 h-5" />
+              </span>
+            </span>
+          </a>
+          <a class="px-1 hover:text-accent transition-colors" href="https://twitter.com/zoriya_dev" target="_blank" rel="me noopener noreferrer" aria-label="twitter">
+            <span class="inline-block align-text-bottom">
+              <span class="relative block">
+                <Icon name="fa-brands:twitter" class="w-5 h-5" />
+              </span>
+            </span>
+          </a>
+          <a class="px-1 hover:text-accent transition-colors" href="https://www.linkedin.com/in/zoe-roux/" target="_blank" rel="me noopener noreferrer" aria-label="linkedin">
+            <span class="inline-block align-text-bottom">
+              <span class="relative block">
+                <Icon name="fa-brands:linkedin" class="w-5 h-5" />
+              </span>
+            </span>
+          </a>
+          <a class="px-1 hover:text-accent transition-colors" href="/rss.xml" rel="me" aria-label="rss">
+            <span class="inline-block align-text-bottom">
+              <span class="relative block">
+                <Icon name="fa6-solid:rss" class="w-5 h-5" />
+              </span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="prose text-fg-secondary max-w-none">
+      <p>
+        I work on{" "}
+        <a href="https://github.com/zoriya/kyoo" target="_blank" class="text-link no-underline hover:underline">
+          Kyoo
+        </a>{" "}
+        or other nerdy projects at night. I love weird tools (a{" "}
+        <a href="https://github.com/zoriya/abyss" target="_blank" class="text-link no-underline hover:underline">
+          keyboard
+        </a>{" "}
+        that I designed myself,{" "}
+        <a href="/blogs/vim-superpowers/" class="text-link no-underline hover:underline">
+          vim
+        </a>, tiling window manager like{" "}
+        <a href="https://codeberg.org/dwl/dwl" target="_blank" class="text-link no-underline hover:underline">
+          dwl
+        </a>{" "}
+        or{" "}
+        <a href="https://github.com/zoriya/gaze" target="_blank" class="text-link no-underline hover:underline">
+          gaze
+        </a>). Feel free to reach out if you want to talk!
+      </p>
+    </section>
+  </article>
+
+  <section>
+    <h2 class="mt-8 text-2xl font-extrabold mb-10 text-fg">Recent</h2>
+    <section class="space-y-10 w-full">
+      <RecentPosts />
+    </section>
+  </section>
+</BaseLayout>

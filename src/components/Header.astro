@@ -1,0 +1,93 @@
+---
+import { Icon } from "astro-icon/components";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const navLinks = [
+	{ href: "/blogs/", label: "Blogs" },
+	{ href: "/posts/", label: "Posts" },
+	{ href: "/tags/", label: "Tags" },
+];
+---
+
+<header class="flex items-center justify-between px-4 py-6 sm:px-6 gap-x-3 max-w-7xl mx-auto">
+  <a href="/" class="text-base font-medium text-fg-muted hover:text-fg">
+    Zoe's blog
+  </a>
+
+  <nav class="hidden md:flex items-center gap-x-5 h-12">
+    {navLinks.map((link) => (
+      <a
+        href={link.href}
+        class="flex items-center text-fg-muted hover:text-accent transition-colors"
+      >
+        <span class="text-base font-medium">{link.label}</span>
+      </a>
+    ))}
+
+    <a
+      href="https://github.com/zoriya"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex items-center text-fg-muted hover:text-accent transition-colors"
+      aria-label="GitHub"
+    >
+      <Icon name="fa-brands:github" class="w-5 h-5" />
+    </a>
+
+    <ThemeToggle />
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="flex md:hidden items-center gap-x-3 h-12">
+    <ThemeToggle />
+    <label id="menu-button" class="cursor-pointer hover:text-accent transition-colors">
+      <Icon name="fa6-solid:bars" class="w-5 h-5" />
+    </label>
+  </div>
+
+  <!-- Mobile menu overlay -->
+  <div id="mobile-menu" class="fixed inset-0 z-30 hidden w-screen h-screen overflow-auto bg-surface-alt/50 backdrop-blur-sm">
+    <ul class="flex flex-col items-end w-full px-6 py-6 mx-auto space-y-2 list-none max-w-7xl">
+      <li>
+        <button id="menu-close" class="cursor-pointer hover:text-accent transition-colors">
+          <Icon name="fa6-solid:xmark" class="w-5 h-5" />
+        </button>
+      </li>
+      {navLinks.map((link) => (
+        <li class="mt-1">
+          <a href={link.href} class="flex items-center text-fg-muted hover:text-accent transition-colors">
+            <span class="text-lg font-medium">{link.label}</span>
+          </a>
+        </li>
+      ))}
+      <li class="mt-1">
+        <a href="https://github.com/zoriya" target="_blank" rel="noopener noreferrer" class="flex items-center text-fg-muted hover:text-accent transition-colors">
+          <Icon name="fa-brands:github" class="w-5 h-5" />
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById("menu-button");
+  const menuClose = document.getElementById("menu-close");
+  const menu = document.getElementById("mobile-menu");
+
+  menuBtn?.addEventListener("click", () => {
+    menu?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  });
+
+  menuClose?.addEventListener("click", () => {
+    menu?.classList.add("hidden");
+    document.body.style.overflow = "";
+  });
+
+  menu?.addEventListener("click", (e) => {
+    if (e.target === menu) {
+      menu.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+  });
+</script>

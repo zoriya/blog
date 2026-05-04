@@ -1,0 +1,66 @@
+---
+import "../styles/global.css";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+
+interface Props {
+	title: string;
+	description?: string;
+	currentPath?: string;
+}
+
+const { title, description, currentPath } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    {description && <meta name="description" content={description} />}
+    <meta name="robots" content="all" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/rss.xml"
+      title={title}
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).href} />
+    <meta property="og:site_name" content={title} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:locale" content="en" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    <meta name="author" content="Zoe Roux" />
+    <link href="https://github.com/zoriya" rel="me" />
+    <link href="https://twitter.com/zoriya_dev" rel="me" />
+    <link href="https://www.linkedin.com/in/zoe-roux/" rel="me" />
+    <meta name="theme-color" content="#1e1e2e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#eff1f5" media="(prefers-color-scheme: light)" />
+    <script is:inline>
+      (function() {
+        var stored = localStorage.getItem("theme");
+        var theme = stored || "system";
+        var isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (isDark) document.documentElement.classList.add("dark");
+      })();
+    </script>
+  </head>
+  <body
+    class="flex flex-col min-h-screen px-6 m-auto text-lg leading-7 max-w-7xl font-sans antialiased bg-surface text-fg sm:px-14 md:px-24 lg:px-32"
+  >
+    <Header currentPath={currentPath} />
+    <main id="main-content" class="grow">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -293,3 +293,12 @@ We do need to add logic to the gateway for phantom tokens to work but this isn't
 - [x] traefik: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/
 - [ ] add other proxy to this list by contributing! I was too lazy to find more references
 
+## Long lived flows or websockets
+
+Some flows might outlive the duration of the temporary jwt created by the gateway. One such example is websockets, you can create a jwt and ensure the user has the permissions to create a jwt by handling the first request (the one that will return 101 switching protocol) but if you send a message in your websocket 5 hours later your jwt will have expired.
+
+I couldn't find a silver lining solution for this, the best i came up with for kyoo is to consider the websocket handler as another gateway and refresh the jwt on each new message (excluding keep-alive/pings)
+
+# Afterword
+
+I'm pretty happy with 

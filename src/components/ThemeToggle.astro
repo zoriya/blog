@@ -6,23 +6,21 @@ import { Icon } from "astro-icon/components";
   id="theme-toggle"
   type="button"
   aria-label="Cycle theme"
-  class="text-base hover:text-accent transition-colors"
+  class="text-base text-fg-muted hover:text-accent transition-colors"
 >
-  <span class="hidden" aria-hidden="true" id="icon-system">
-    <Icon name="fa6-solid:desktop" class="w-5 h-5" />
+  <span aria-hidden="true" id="icon-system">
+    <Icon name="fa6-solid:circle-half-stroke" class="w-5 h-5" />
   </span>
-  <span class="hidden dark:inline" aria-hidden="true" id="icon-dark">
+  <span class="hidden" aria-hidden="true" id="icon-dark">
     <Icon name="fa6-solid:moon" class="w-5 h-5" />
   </span>
-  <span class="dark:hidden" aria-hidden="true" id="icon-light">
+  <span class="hidden" aria-hidden="true" id="icon-light">
     <Icon name="fa6-solid:sun" class="w-5 h-5" />
   </span>
 </button>
 
 <script>
-  const stored = typeof localStorage !== "undefined" ? localStorage.getItem("theme") : null;
   const sysPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-  const toggle = document.getElementById("theme-toggle");
   const icons = ["system", "light", "dark"];
 
   function applyTheme(t: string) {
@@ -44,12 +42,11 @@ import { Icon } from "astro-icon/components";
     }
   });
 
+  const toggle = document.getElementById("theme-toggle");
   if (toggle) {
-    const initial = localStorage.getItem("theme") ?? "system";
-    updateIcons(initial);
+    updateIcons(localStorage.getItem("theme") ?? "system");
     toggle.addEventListener("click", () => {
-      const current = localStorage.getItem("theme") ?? "system";
-      const idx = icons.indexOf(current);
+      const idx = icons.indexOf(localStorage.getItem("theme") ?? "system");
       const next = icons[(idx + 1) % icons.length];
       applyTheme(next);
     });

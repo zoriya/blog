@@ -41,13 +41,13 @@ const defaultTitles = {
 ---
 
 <div class={`my-4 p-4 rounded-lg border-l-4 ${currentStyle.border} ${currentStyle.bg}`}>
-	<div class="flex items-center gap-2 mb-2">
+	<div class="flex text-fg items-center gap-2 mb-2">
 		<Icon name={currentStyle.icon} class={`w-5 h-5 ${currentStyle.border.replace("border-", "text-")}`} />
 		<span class={`font-semibold ${currentStyle.border.replace("border-", "text-")}`}>
 			{title || defaultTitles[type]}
 		</span>
 	</div>
-	<div class="text-fg-secondary">
+	<div>
 		<slot />
 	</div>
 </div>

@@ -1,10 +1,10 @@
+import { fileURLToPath } from "node:url";
+import mdx from "@astrojs/mdx";
+import catppuccinLatte from "@shikijs/themes/catppuccin-latte";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import remarkToc from "remark-toc";
-import mdx from "@astrojs/mdx";
 import icon from "astro-icon";
-import { fileURLToPath } from "url";
-import catppuccinLatteCustom from "./src/lib/catppuccin-latte-custom.ts";
+import remarkToc from "remark-toc";
 
 export default defineConfig({
 	integrations: [icon(), mdx()],
@@ -24,7 +24,14 @@ export default defineConfig({
 		remarkPlugins: [[remarkToc, { heading: "contents", tight: true }]],
 		shikiConfig: {
 			themes: {
-				light: catppuccinLatteCustom,
+				light: {
+					...catppuccinLatte,
+					name: "catppuccin-latte-custom",
+					colors: {
+						...catppuccinLatte.colors,
+						"editor.background": "#e6e9ef",
+					},
+				},
 				dark: "catppuccin-frappe",
 			},
 		},

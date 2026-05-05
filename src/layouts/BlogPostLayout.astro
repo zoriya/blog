@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import Comments from "@/components/Comments.astro";
+import Prose from "@/components/Prose.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import TagBadge from "@/components/TagBadge.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
@@ -27,21 +28,7 @@ const currentPath = Astro.url.pathname;
 >
   <article class="relative py-8">
     <div class="flex flex-col lg:flex-row gap-8">
-      <div class="flex-1 min-w-0 max-w-none prose
-        prose-headings:text-fg
-        prose-p:text-fg-secondary
-        prose-a:text-link prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-fg
-        prose-inline-code:text-accent prose-inline-code:bg-surface-alt prose-inline-code:px-1.5 prose-inline-code:py-0.5 prose-inline-code:rounded prose-inline-code:before:content-none prose-inline-code:after:content-none
-        prose-pre:border prose-pre:border-border
-        prose-img:rounded-lg
-        prose-li:text-fg-secondary
-        prose-blockquote:border-l-accent prose-blockquote:text-fg-secondary
-        prose-hr:border-border
-        prose-table:border-border
-        prose-th:border-border prose-th:bg-surface-alt prose-th:text-fg
-        prose-td:border-border prose-td:text-fg-secondary
-      ">
+      <Prose>
         <header class="not-prose mb-8">
           <h1 class="text-3xl font-extrabold text-fg">
             {entry.data.title}
@@ -50,7 +37,7 @@ const currentPath = Astro.url.pathname;
             <time datetime={entry.data.date.toISOString().split("T")[0]}>
               {entry.data.date.toISOString().split("T")[0]}
             </time>
-            <span class="text-accent">&middot;</span>
+            <span>-</span>
             <span>{readingTime} min read</span>
           </div>
           {entry.data.tags.length > 0 && (
@@ -59,8 +46,9 @@ const currentPath = Astro.url.pathname;
             </div>
           )}
         </header>
+
         <Content />
-      </div>
+      </Prose>
 
       {headings.length > 0 && (
         <aside class="lg:w-56 shrink-0 hidden lg:block">

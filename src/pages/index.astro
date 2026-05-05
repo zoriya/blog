@@ -1,10 +1,16 @@
 ---
 import { Icon } from "astro-icon/components";
+import { remark } from "remark";
+import stripMarkdown from "strip-markdown";
+import Prose from "@/components/Prose.astro";
 import RecentPosts from "@/components/RecentPosts.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import About from "./about.md";
+import rawContent from "./about.md?raw";
 
-const description =
-	"I work on Kyoo or other nerdy projects at night. I love weird tools (a keyboard that I designed myself, vim, tiling window manager like dwl or gaze). Feel free to reach out if you want to talk!";
+const description = String(
+	await remark().use(stripMarkdown).process(rawContent),
+).trim();
 ---
 
 <BaseLayout title="Zoe's blog" description={description} currentPath="/">
@@ -19,7 +25,7 @@ const description =
       />
       <h1 class="text-4xl font-extrabold text-fg">Zoe Roux</h1>
       <h2 class="text-xl text-fg-secondary">
-        I&rsquo;m not a dev, I&rsquo;m a sorceress.
+        I'm not a dev, I'm a sorceress.
       </h2>
       <div class="mt-1 text-2xl">
         <div class="flex flex-wrap text-fg-muted">
@@ -55,29 +61,11 @@ const description =
       </div>
     </header>
 
-    <section class="prose text-fg-secondary max-w-none">
-      <p>
-        I work on{" "}
-        <a href="https://github.com/zoriya/kyoo" target="_blank" class="text-link no-underline hover:underline">
-          Kyoo
-        </a>{" "}
-        or other nerdy projects at night. I love weird tools (a{" "}
-        <a href="https://github.com/zoriya/abyss" target="_blank" class="text-link no-underline hover:underline">
-          keyboard
-        </a>{" "}
-        that I designed myself,{" "}
-        <a href="/blogs/vim-superpowers/" class="text-link no-underline hover:underline">
-          vim
-        </a>, tiling window manager like{" "}
-        <a href="https://codeberg.org/dwl/dwl" target="_blank" class="text-link no-underline hover:underline">
-          dwl
-        </a>{" "}
-        or{" "}
-        <a href="https://github.com/zoriya/gaze" target="_blank" class="text-link no-underline hover:underline">
-          gaze
-        </a>). Feel free to reach out if you want to talk!
-      </p>
-    </section>
+    <!-- <section class="text-fg-secondary"> -->
+    <Prose>
+      <About />
+    </Prose>
+
   </article>
 
   <section>
@@ -86,4 +74,5 @@ const description =
       <RecentPosts />
     </section>
   </section>
+
 </BaseLayout>

@@ -15,7 +15,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"complexity": {
+				"noImportantStyles": "off"
+			}
 		}
 	},
 	"javascript": {
@@ -32,7 +35,9 @@
 	},
 	"overrides": [
 		{
-			"includes": ["src/**/*.astro"],
+			"includes": [
+				"src/**/*.astro"
+			],
 			"linter": {
 				"rules": {
 					"correctness": {

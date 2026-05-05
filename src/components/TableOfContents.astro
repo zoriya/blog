@@ -27,7 +27,7 @@ const { headings, currentPath } = Astro.props;
             <a
               href={`${currentPath}#${heading.slug}`}
               data-toc-link={heading.slug}
-              class="text-fg-muted hover:text-accent hover:underline transition-colors data-[active]:text-accent data-[active]:font-medium"
+              class="text-fg-muted hover:text-accent hover:underline transition-colors data-active:text-accent data-active:font-medium"
             >
               {heading.text}
             </a>

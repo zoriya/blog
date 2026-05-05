@@ -5,6 +5,8 @@ date: 2024-06-14
 tags: ["ffmpeg", "kyoo"]
 ---
 
+import Aside from "@/components/Aside.astro";
+
 For [Kyoo](https://github.com/zoriya/kyoo), I need to play video on a variety of clients (browsers, TVs, mobile apps). Clients does not always support the video codec of the source video since videos are user provided. Any valid video should work everywhere. Users should not have to worry about converting videos for Kyoo to work, everything should Work™ the first time.
 
 Users don't always have a stable connection, but they should be able to play their video. Even if they are on a train. Those constraints mean that Kyoo needs a service to change videos codec and file size (transcode) on the fly. Why on the fly? Because we don't want users to store all their videos 5 times (the original, a 480p version, a 720p version and so on).
@@ -269,11 +271,11 @@ This command will output something like that:
 
 in a few seconds. We can use that before starting to transcode to know where we should cut segments.
 
-{{< alert "note" >}}
+<Aside type="note">
 
 Kyoo actually start transcoding before every keyframes could be retrieved since on slow HDD, keyframe extraction can take up to 30 seconds. This ensures that you wait for a minimum amount of time before playback start. Since keyframes are cached for later uses, this process is transparent for users, and you can resume playback from the middle of your movie latter if you want.
 
-{{< /alert >}}
+</Aside>
 
 ## Wrapping up
 
@@ -284,12 +286,11 @@ For example, hardware acceleration, aka using your graphics card for faster tran
 
 I iterated a lot on this transcoder, my first implementation was written in C and used ffmpeg's library directly (this was also my first C and low level project, I had never heard of a pointer before). Everybody told me this was a bad idea and I should just create a node process that would call ffmpeg. While this was the right call if I wanted to quickly create a transcoder, learning to read the ffmpeg's source code and how it worked inside gave me lots of insights. Insights I still use today when working in today's transcoder, after rewriting everything in Rust and then in Go. Each rewrite originated from perspective shift on how to process state and streams, leading to the current implementation that finally archived every goal.
 
-Kyoo's transcoder also has other features that resolve around video like extracting subtitles, fonts or media thumbnails for seeking (see picture below).
+Kyoo's transcoder also has other features that resolves around video like extracting subtitles, fonts or media thumbnails for seeking (see picture below).
 ![thumbnail for seeking](./kyoo-seek.png)
 
 It's still a moving project with new features coming, but the core transcoding process is done and fully working! The next feature that will probably come is intro/outro detection using audio fingerprints.
 
 This was my first blog about Kyoo's development, If you want to read more about a specific topic, please manifest yourself! If you liked this article, consider sharing it or staring [Kyoo](https://github.com/zoriya/kyoo) on GitHub.
 
-<!-- vim: set wrap: -->
-
+{/* vim: set wrap: */}

@@ -6,6 +6,8 @@ draft: false
 tags: ["vim", "tools"]
 ---
 
+import Aside from "@/components/Aside.astro";
+
 I get asked at lot why I use vim and people don't believe me when I tell them I don't miss IntelliJ or other IDEs. This post will explain why I initially left the comfort of my well-known IDE and tried vim. I'm also going to explain why I find vim's way of handling keybinds and file tabs appealing ; as well as what my pain-points with traditional IDE's way of handling them were.
 
 ## The learning curve
@@ -97,11 +99,11 @@ The jump list works great for quickly navigating between files but after jumping
 
 You can think of global marks as a bookmark, you first mark a file with a key (<kbd>m</kbd>+<kbd>A</kbd> for example, <kbd>m</kbd> means mark and <kbd>A</kbd> is the name of your mark, it can be any uppercase letter). Pressing <kbd>\'</kbd>+<kbd>A</kbd> will bring you back to the same file at the exact same line as when you bookmarked it.
 
-{{< alert "note" >}}
+<Aside type="note">
 
 You might wonder why only uppercase letters are allowed for global marks. That's simply because a lowercase letter refers to a local mark. A local mark is scoped to a file, so you can have a <kbd>a</kbd> mark per file. Pressing it will get you back to the marked line but will not change file.
 
-{{< /alert >}}
+</Aside>
 
 ## Closing notes: the present of vim
 
@@ -118,5 +120,4 @@ Be aware though, if you have no interest scripting your editor to your liking, y
 Vim is not an of-the-shelf solution. You will need to configure it before using it as a daily editor. If you do not enjoy that kind of editor, that's fine just use something else. I personally really like getting to know my tools and having an editor I can tinker with. Consistently learning new things about the editor and using more coreutils tools in my workflow is something I find really enjoyable.<br/>
 -- On a side note, I still think `awk` and `jq` are ones of the most underrated tools available.
 
-<!-- vim: set wrap: -->
-
+{/* vim: set wrap: */}

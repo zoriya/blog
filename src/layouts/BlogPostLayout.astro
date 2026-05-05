@@ -2,10 +2,10 @@
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
-import Comments from "../components/Comments.astro";
-import TableOfContents from "../components/TableOfContents.astro";
-import TagBadge from "../components/TagBadge.astro";
-import BaseLayout from "./BaseLayout.astro";
+import Comments from "@/components/Comments.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import TagBadge from "@/components/TagBadge.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 interface Props {
 	entry: CollectionEntry<"blogs" | "posts">;

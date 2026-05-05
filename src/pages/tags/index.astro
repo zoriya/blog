@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const allBlogs = await getCollection("blogs", ({ data }) => !data.draft);
 const allPosts = await getCollection("posts", ({ data }) => !data.draft);

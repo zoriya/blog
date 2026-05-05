@@ -7,6 +7,7 @@ date: 2024-08-20
 tags: ["gameboy", "asm", "school", "gamejam"]
 ---
 
+import Aside from "@/components/Aside.astro";
 import { Icon } from 'astro-icon/components';
 
 I recently mentioned on Twitter that I made a gameboy game with some friends during my first year of college. Since there's some cool stuff to showcase, here's a blog about it!
@@ -135,14 +136,17 @@ Here you can see the whole background of the game. A 32x32 grid of tiles (so 256
 
 We can move the camera over this background by setting the `SCX` and `SCY` registers (aka `scroll x` and `scroll y`). The camera will show a 160x144 pixel area and will wrap around the background if necessary (if part of the background goes off-screen, it will appear on the opposite side of the screen).
 
-> **Note:** You might have guessed but the `SCX` and `SCY` registers are of course memory mapped, meaning to set them you just need to write at `$FF43` and `$FF42` respectively. In c, it would be something like:
->
-> ```c
-> uint8_t *scroll_x = 0xFF43;
-> *scrool_x = 12;
-> // set scroll to 12
-> // (or whatever value you want)
-> ```
+<Aside>
+You might have guessed but the `SCX` and `SCY` registers are of course memory mapped, meaning to set them you just need to write at `$FF43` and `$FF42` respectively. In c, it would be something like:
+
+```c
+uint8_t *scroll_x = 0xFF43;
+*scrool_x = 12;
+// set scroll to 12
+// (or whatever value you want)
+```
+
+</Aside>
 
 
 This means, we can fake a moving spaceship by simply placing a sprite in the middle of the screen and changing the scroll registers.
@@ -249,9 +253,7 @@ Now that all the numbers we want to display are in BCD format, displaying them b
 
 <details>
 
-<summary>
-    Here is an example implementation of a write number function.
-</summary>
+<summary>Here is an example implementation of a write number function.</summary>
 
 ```asm
 ; Write the number in `a` to the address `de` (in ascii)
@@ -298,7 +300,9 @@ Also, I said earlier that we thought it would be cool to play our game on real h
 
 It's our very own cartridge that reads the game from an EEPROM. The right image shows the game that segfault!
 
-> As said previously, segfault is not possible on the gameboy but we made a security mechanism when we jump at a weird place in memory to help us debug. This is this security screen that you are seeing in this image.
+<Aside>
+As said previously, segfault is not possible on the gameboy but we made a security mechanism when we jump at a weird place in memory to help us debug. This is this security screen that you are seeing in this image.
+</Aside>
 
 This catridge can also be used to play on a SNES by using the Super GameBoy!
 

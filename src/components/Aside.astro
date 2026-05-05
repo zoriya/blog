@@ -1,0 +1,53 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	type?: "note" | "tip" | "warning" | "danger";
+	title?: string;
+}
+
+const { type = "note", title } = Astro.props;
+
+const styles = {
+	note: {
+		border: "border-blue-500",
+		bg: "bg-blue-500/10",
+		icon: "fa6-solid:circle-info",
+	},
+	tip: {
+		border: "border-green-500",
+		bg: "bg-green-500/10",
+		icon: "fa6-solid:lightbulb",
+	},
+	warning: {
+		border: "border-yellow-500",
+		bg: "bg-yellow-500/10",
+		icon: "fa6-solid:triangle-exclamation",
+	},
+	danger: {
+		border: "border-red-500",
+		bg: "bg-red-500/10",
+		icon: "fa6-solid:circle-exclamation",
+	},
+};
+
+const currentStyle = styles[type];
+const defaultTitles = {
+	note: "Note",
+	tip: "Tip",
+	warning: "Warning",
+	danger: "Danger",
+};
+---
+
+<div class={`my-4 p-4 rounded-lg border-l-4 ${currentStyle.border} ${currentStyle.bg}`}>
+	<div class="flex items-center gap-2 mb-2">
+		<Icon name={currentStyle.icon} class={`w-5 h-5 ${currentStyle.border.replace("border-", "text-")}`} />
+		<span class={`font-semibold ${currentStyle.border.replace("border-", "text-")}`}>
+			{title || defaultTitles[type]}
+		</span>
+	</div>
+	<div class="text-fg-secondary">
+		<slot />
+	</div>
+</div>

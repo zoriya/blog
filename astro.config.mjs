@@ -3,11 +3,17 @@ import { defineConfig } from "astro/config";
 import remarkToc from "remark-toc";
 import mdx from "@astrojs/mdx";
 import icon from "astro-icon";
+import { fileURLToPath } from "url";
 
 export default defineConfig({
 	integrations: [icon(), mdx()],
 	vite: {
 		plugins: [tailwindcss()],
+		resolve: {
+			alias: {
+				"@": fileURLToPath(new URL("./src", import.meta.url)),
+			},
+		},
 	},
 	site: "https://zoriya.dev",
 	prefetch: {

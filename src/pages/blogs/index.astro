@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import ListLayout from "../../layouts/ListLayout.astro";
+import ListLayout from "@/layouts/ListLayout.astro";
 
 const blogs = await getCollection("blogs", ({ data }) => !data.draft);
 blogs.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());

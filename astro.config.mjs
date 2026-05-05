@@ -4,6 +4,7 @@ import remarkToc from "remark-toc";
 import mdx from "@astrojs/mdx";
 import icon from "astro-icon";
 import { fileURLToPath } from "url";
+import catppuccinLatteCustom from "./src/lib/catppuccin-latte-custom.ts";
 
 export default defineConfig({
 	integrations: [icon(), mdx()],
@@ -23,7 +24,7 @@ export default defineConfig({
 		remarkPlugins: [[remarkToc, { heading: "contents", tight: true }]],
 		shikiConfig: {
 			themes: {
-				light: "catppuccin-latte",
+				light: catppuccinLatteCustom,
 				dark: "catppuccin-frappe",
 			},
 		},

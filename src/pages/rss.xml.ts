@@ -12,12 +12,12 @@ export async function GET(context: APIContext) {
 			title: entry.data.title,
 			description: entry.data.description || "",
 			pubDate: entry.data.date,
-			link: `/${entry.collection}/${entry.id}/`,
+			link: `${context.site}/${entry.collection}/${entry.id}/`,
 		}));
 
 	return rss({
 		title: "Zoe's blog",
-		description: "Zoe Roux's personal blog",
+		description: "Recent content on my blog",
 		site: context.site ?? "",
 		items,
 		customData: `<language>en</language>`,

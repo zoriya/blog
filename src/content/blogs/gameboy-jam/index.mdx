@@ -10,6 +10,10 @@ tags: ["gameboy", "asm", "school", "gamejam"]
 import Aside from "@/components/Aside.astro";
 import { Icon } from 'astro-icon/components';
 
+import scrollVideo from "./scroll.mp4";
+import cartridgeImg from "./cartridge.jpg";
+import gameImg from "./game.jpg";
+
 I recently mentioned on Twitter that I made a gameboy game with some friends during my first year of college. Since there's some cool stuff to showcase, here's a blog about it!
 
 ## Context
@@ -151,7 +155,7 @@ uint8_t *scroll_x = 0xFF43;
 
 This means, we can fake a moving spaceship by simply placing a sprite in the middle of the screen and changing the scroll registers.
 
-<video src="scroll.mp4" controls>
+<video src={scrollVideo} controls>
 </video>
 
 In this video, you can see the game on the right and the complete background rendered on the left. The box you can see moving is the camera's viewport (it moves because we are incrementing the `SCY` register).
@@ -294,8 +298,8 @@ I'm pretty happy of what we managed to achieve in a single week-end with this ga
 Also, I said earlier that we thought it would be cool to play our game on real hardware. So we did:
 
 <div class="flex gap-4">
-  <img src="./cartridge.jpg" class="w-1/2" />
-  <img src="./game.jpg" class="w-1/2" />
+  <img src={cartridgeImg.src} class="w-1/2" />
+  <img src={gameImg.src} class="w-1/2" />
 </div>
 
 It's our very own cartridge that reads the game from an EEPROM. The right image shows the game that segfault!

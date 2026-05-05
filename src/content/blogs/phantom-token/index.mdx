@@ -3,13 +3,15 @@ title: "Jwt should not be persisted"
 description: ""
 date: 2025-03-26
 draft: true
-tags: []
+tags: ["kyoo", "auth"]
 ---
+
+import Aside from "@/components/Aside.astro";
 
 It's easy to find online resources talking about the merits of JWT. You'll read stuff like "it's better for horizontal scaling", "it's better for perf since you don't need to hit the db on every request" or how it has better security.
 Most of those resources either only talk about auth on a surface level or will introduce workarounds for JWTs shortcomings that negate its advantages.
 
-# A story about state
+## A story about state
 
 The main benefits of JWT is that the token is stateful, so we can deduce the user's permissions without having to hit the db or an auth server. This is extremely valuable in a microservice context, without a JWT you'll have to ask db 50 times if you have 50 services.
 
@@ -18,14 +20,14 @@ The biggest disadvantage is that the token is stateful. This means the token wil
 To mitigate those issues, some people will introduce deny-lists of JWT that should not be accepted by your servers. This re-introduces the initial problem of session: making a db call on each request (and on every service.)
 
 
-# Single use JWTs
+## Single use JWTs
 
 Instead of creating sessions on top of JWTs, we can embrace what JWTs are good at: proving who you are & your permissions over something that doesn't change over time or that expires very quickly.
 
 For example, you could imagine an API that would compute something over a long period of time (say a week.) The API that enqueues the compute could return you a JWT allowing you to access progress/results of said task.
 This simplifies auth handling for the compute service that now only has to verify the JWT & you have no risk of your permission changing or being revoked: the JWT only grants you access to a single compute that you started.
 
-# JWTs in microservices
+## JWTs in microservices
 
 As stated previously, JWTs truly shines in microservices **as long as** you don't need to check for token invalidation on each service. There's a neat way to get this that I implemented recently for [kyoo's v5](https://github.com/zoriya/kyoo): phantom tokens!
 
@@ -37,7 +39,7 @@ The concept is simple:
 You get the benefits of JWT (aka no call to db/auth service in every service) while having traditional sessions in the user's perspective (so no manual token refresh needed, no out-of-sync permissions & no token valid after session invalidation).
 The main cons of this method are a SPOF on your auth service & bringing some logic to your gateway (especially for kyoo because for k8s releases we want to allow users to choose their gateway. Sorry @acelinkio :p)
 
-## Example implementation 
+### Example implementation 
 
 For a minimal phantom token implementation you would need:
 - an auth service to login/logout/stuff that will return a session token
@@ -146,47 +148,47 @@ func main() {
 Now onto the method to convert a session to a jwt. Nothing too fancy, create a jwt, assign claims to the user's values and sign it.
 
 ```go
-	rsakey, err := rsa.GenerateKey(rand.Reader, 4096)
-	if err != nil {
-		log.Fatal(err)
+rsakey, err := rsa.GenerateKey(rand.Reader, 4096)
+if err != nil {
+	log.Fatal(err)
+}
+
+http.HandleFunc("/auth/jwt", func(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+	if !strings.HasPrefix(auth, "Bearer ") {
+		http.Error(w, "Missing session token", http.StatusUnauthorized)
+		return
+	}
+	token := auth[len("Bearer "):]
+
+	user, ok := users[token]
+	if !ok {
+		http.Error(w, "Invalid token", http.StatusForbidden)
+		return
 	}
 
-	http.HandleFunc("/auth/jwt", func(w http.ResponseWriter, r *http.Request) {
-		auth := r.Header.Get("Authorization")
-		if !strings.HasPrefix(auth, "Bearer ") {
-			http.Error(w, "Missing session token", http.StatusUnauthorized)
-			return
-		}
-		token := auth[len("Bearer "):]
+	claims := make(jwt.MapClaims)
+	claims["sub"] = user.Name
+	claims["iss"] = "keibi-blog"
+	claims["iat"] = &jwt.NumericDate{
+		Time: time.Now().UTC(),
+	}
+	claims["exp"] = &jwt.NumericDate{
+		Time: time.Now().UTC().Add(time.Hour),
+	}
+	jwt := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	t, err := jwt.SignedString(rsakey)
+	if err != nil {
+		http.Error(w, "Could not sign token", http.StatusInternalServerError)
+		return
+	}
 
-		user, ok := users[token]
-		if !ok {
-			http.Error(w, "Invalid token", http.StatusForbidden)
-			return
-		}
+	w.Header().Add("Authorization", fmt.Sprintf("Bearer %s", t))
 
-		claims := make(jwt.MapClaims)
-		claims["sub"] = user.Name
-		claims["iss"] = "keibi-blog"
-		claims["iat"] = &jwt.NumericDate{
-			Time: time.Now().UTC(),
-		}
-		claims["exp"] = &jwt.NumericDate{
-			Time: time.Now().UTC().Add(time.Hour),
-		}
-		jwt := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-		t, err := jwt.SignedString(rsakey)
-		if err != nil {
-			http.Error(w, "Could not sign token", http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Add("Authorization", fmt.Sprintf("Bearer %s", t))
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(jwt)
-	})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(jwt)
+})
 ```
 
 Great, now we have a way to login, when the user call this method they'll get a session token they can store and send in every subsequent requests. For our phantom token to be useful, we need to configure our gateway to convert the session to a jwt when the request enters the internal network.
@@ -255,50 +257,63 @@ We of course need to implement this jwks endpoint to broadcast our keys to the a
 
 ```go
 http.HandleFunc("/.well-known/jwks.json", func(w http.ResponseWriter, r *http.Request) {
-		key, err := jwk.New(rsakey.PublicKey)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	key, err := jwk.New(rsakey.PublicKey)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-		key.Set("use", "sig")
-		key.Set("key_ops", "verify")
-		set := jwk.NewSet()
-		set.Add(key)
+	key.Set("use", "sig")
+	key.Set("key_ops", "verify")
+	set := jwk.NewSet()
+	set.Add(key)
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(set)
-	})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(set)
+})
 ```
 
 You might want to cache as least the previous key so already existing jwts aren't instantly invalidated in case of signing key refresh.
 
+You can now use your api using a session provided by your auth system. Example curl:
+
+```bash
+TOKEN=$(curl localhost:7891/auth/user -d '{ "name": "toto" }' | jq .token -r)
+curl localhost:7891/api/me -H "authorization: Bearer $TOKEN"
+```
+
 That's it for a super basic phantom token setup!
 
-# The downsides of phantom tokens
+<Aside>
+You can find the full example code of this blog on the [blog's repository](https://github.com/zoriya/blog/tree/master/src/content/blogs/phantom-token)
 
-## SPOF on auth
+You can also browse [kyoo's source code](https://github.com/zoriya/kyoo) for a real project using phantom tokens
+</Aside>
+
+## The downsides of phantom tokens
+
+### SPOF on auth
 
 Since every request going through your gateway needs to pass through the auth service to generate a jwt, you 100% have a single point of failure on the auth service. 
 
 I don't think it's as bad as it sounds since in any other scenario you would still need to reach out for the auth's service/database to check for expired jwt or to get a session's information. Instead having everything cleanly separated in an auth service makes it easier to be high availability and reduces the scope that might impact the available of the service.
 
-## Logic on the gateway
+### Logic on the gateway
 
-We do need to add logic to the gateway for phantom tokens to work but this isn't as niche as it sounds. For example [k8s'gateway api added support for it recently ](see https://github.com/kubernetes-sigs/gateway-api/pull/4001) and a lot of gatways support it natively.
+We do need to add logic to the gateway for phantom tokens to work but this isn't as niche as it sounds. For example [k8s'gateway api added support for it recently ](see https://github.com/kubernetes-sigs/gateway-api/pull/4001) and a lot of gateways support it natively.
 
 - [ ] cilium: https://github.com/cilium/cilium#23797
 - [x] envoy gateway: https://github.com/cilium/cilium#23797
 - [x] traefik: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/
 - [ ] add other proxy to this list by contributing! I was too lazy to find more references
 
-## Long lived flows or websockets
+### Long lived flows or websockets
 
 Some flows might outlive the duration of the temporary jwt created by the gateway. One such example is websockets, you can create a jwt and ensure the user has the permissions to create a jwt by handling the first request (the one that will return 101 switching protocol) but if you send a message in your websocket 5 hours later your jwt will have expired.
 
-I couldn't find a silver lining solution for this, the best i came up with for kyoo is to consider the websocket handler as another gateway and refresh the jwt on each new message (excluding keep-alive/pings)
+I couldn't find a silver lining solution for this, the best i came up with for kyoo is to consider the websocket handler as another gateway and refresh the jwt on each new message (excluding keep-alive/pings). If you're interested here's the implementation PR: https://github.com/zoriya/Kyoo/pull/1491.
 
-# Afterword
+## Afterword
 
-I'm pretty happy with 
+I'm pretty happy with the decision of using phantom tokens on kyoo, the implementation was pretty easy and it makes it a breeze to verify users's claims in each services that needs it.

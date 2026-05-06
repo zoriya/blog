@@ -14,6 +14,10 @@ import scrollVideo from "./scroll.mp4";
 import cartridgeImg from "./cartridge.jpg";
 import gameImg from "./game.jpg";
 
+export function Check() {
+	return <Icon name="fa6-solid:check" />;
+}
+
 I recently mentioned on Twitter that I made a gameboy game with some friends during my first year of college. Since there's some cool stuff to showcase, here's a blog about it!
 
 ## Context
@@ -44,17 +48,17 @@ We wrote on a whiteboard what we wanted to do and started working. At the end of
 ![planning whiteboard](./todo.jpg "Our planning whiteboard")
 Here's the same board but in text & English:
 
-| Must                                  | Should                         | Could     |
-| :------------------------------------ | :----------------------------- | :-------- |
-| <Icon name="fa6-solid:check" /> Move             | <Icon name="fa6-solid:check" /> Game over | ~multi~   |
-| <Icon name="fa6-solid:check" /> Obstacle         | <Icon name="fa6-solid:check" /> Music     | ~Colors~  |
-| <Icon name="fa6-solid:check" /> Shoot            | Enemies can shoot              | Power ups |
-| <Icon name="fa6-solid:check" /> Moving obstacles | Lifes                          |           |
-| <Icon name="fa6-solid:check" /> SFX              | ~cant read sorry~              |           |
-| <Icon name="fa6-solid:check" /> Get hit          | Flash                          |           |
-| <Icon name="fa6-solid:check" /> Simple menues    | <Icon name="fa6-solid:check" /> Boss      |           |
-|                                       | <Icon name="fa6-solid:check" /> Intro     |           |
-|                                       | <Icon name="fa6-solid:check" /> Score     |           |
+| Must                       | Should              | Could     |
+| :--------------------------| :------------------ | :-------- |
+| <Check /> Move             | <Check /> Game over | ~multi~   |
+| <Check /> Obstacle         | <Check /> Music     | ~Colors~  |
+| <Check /> Shoot            | Enemies can shoot   | Power ups |
+| <Check /> Moving obstacles | Lifes               |           |
+| <Check /> SFX              | ~cant read sorry~   |           |
+| <Check /> Get hit          | Flash               |           |
+| <Check /> Simple menues    | <Check /> Boss      |           |
+|                            | <Check /> Intro     |           |
+|                            | <Check /> Score     |           |
 
 Turns out we overestimated the difficulty of the thing, we made a playable POC before going home (at 2am).
 

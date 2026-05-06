@@ -7,6 +7,14 @@ tags: ["kyoo", "auth"]
 ---
 
 import Aside from "@/components/Aside.astro";
+import { Icon } from "astro-icon/components";
+
+export function Check() {
+	return <Icon name="fa6-solid:check" class="w-4 h-4 inline text-success" />;
+}
+export function Cross() {
+	return <Icon name="fa6-solid:xmark" class="w-4 h-4 inline text-danger" />;
+}
 
 It's easy to find online resources talking about the merits of JWT. You'll read stuff like "it's better for horizontal scaling", "it's better for perf since you don't need to hit the db on every request" or how it has better security.
 Most of those resources either only talk about auth on a surface level or will introduce workarounds for JWTs shortcomings that negate its advantages.
@@ -27,7 +35,7 @@ Instead of creating sessions on top of JWTs, we can embrace what JWTs are good a
 For example, you could imagine an API that would compute something over a long period of time (say a week.) The API that enqueues the compute could return you a JWT allowing you to access progress/results of said task.
 This simplifies auth handling for the compute service that now only has to verify the JWT & you have no risk of your permission changing or being revoked: the JWT only grants you access to a single compute that you started.
 
-## JWTs in microservices
+## Phantom tokens
 
 As stated previously, JWTs truly shines in microservices **as long as** you don't need to check for token invalidation on each service. There's a neat way to get this that I implemented recently for [kyoo's v5](https://github.com/zoriya/kyoo): phantom tokens!
 
@@ -37,9 +45,43 @@ The concept is simple:
 - when a user makes a request, have the gateway convert the session (after checking its validity) to a JWT
 
 You get the benefits of JWT (aka no call to db/auth service in every service) while having traditional sessions in the user's perspective (so no manual token refresh needed, no out-of-sync permissions & no token valid after session invalidation).
-The main cons of this method are a SPOF on your auth service & bringing some logic to your gateway (especially for kyoo because for k8s releases we want to allow users to choose their gateway. Sorry @acelinkio :p)
 
-### Example implementation 
+It might be easier to understand with a table:
+
+| Flow                 | Session                               | JWT                                | Phantom Token                      |
+| -------------------- | --------------------------------------| -----------------------------------| -----------------------------------|
+| Client sends         | Session token                         | JWT                                | Session token                      |
+| Internal services    | <Cross /> Call auth service each time | <Check /> Verify signature locally | <Check /> Verify signature locally |
+| DB calls per request | <Cross /> 1+ (on each service)        | <Check /> 0                        | <Check /> 1 (on gateway only)      |
+| Token refresh needed | <Check /> No                          | <Cross /> Yes (client-side)        | <Check /> No (handled by gateway)  |
+| Revocation immediate | <Check /> Yes                         | <Cross /> No (until jwt expiry)    | <Check /> Yes (next request)       |
+
+
+## The downsides of phantom tokens
+
+### SPOF on auth
+
+Since every request going through your gateway needs to pass through the auth service to generate a jwt, you 100% have a single point of failure on the auth service. 
+
+I don't think it's as bad as it sounds since in any other scenario you would still need to reach out for the auth's service/database to check for expired jwt or to get a session's information. Instead having everything cleanly separated in an auth service makes it easier to be high availability and reduces the scope that might impact the available of the service.
+
+### Logic on the gateway
+
+We do need to add logic to the gateway for phantom tokens to work but this isn't as niche as it sounds. For example [k8s'gateway api added support for it recently](https://github.com/kubernetes-sigs/gateway-api/pull/4001) and a lot of gateways support it natively.
+
+- [ ] [cilium](https://github.com/cilium/cilium/pull/23797)
+- [x] [envoy gateway](https://gateway.envoyproxy.io/docs/tasks/security/ext-auth/)
+- [x] [traefik](https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/)
+- [x] [nginx](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/)
+- [ ] add other proxy to this list by contributing! I was too lazy to find more references
+
+### Long lived flows or websockets
+
+Some flows might outlive the duration of the temporary jwt created by the gateway. One such example is websockets, you can create a jwt and ensure the user has the permissions to create a jwt by handling the first request (the one that will return 101 switching protocol) but if you send a message in your websocket 5 hours later your jwt will have expired.
+
+I couldn't find a silver lining solution for this, the best i came up with for kyoo is to consider the websocket handler as another gateway and refresh the jwt on each new message (excluding keep-alive/pings). If you're interested here's the implementation PR: https://github.com/zoriya/Kyoo/pull/1491.
+
+## Example implementation 
 
 For a minimal phantom token implementation you would need:
 - an auth service to login/logout/stuff that will return a session token
@@ -290,29 +332,6 @@ You can find the full example code of this blog on the [blog's repository](https
 
 You can also browse [kyoo's source code](https://github.com/zoriya/kyoo) for a real project using phantom tokens
 </Aside>
-
-## The downsides of phantom tokens
-
-### SPOF on auth
-
-Since every request going through your gateway needs to pass through the auth service to generate a jwt, you 100% have a single point of failure on the auth service. 
-
-I don't think it's as bad as it sounds since in any other scenario you would still need to reach out for the auth's service/database to check for expired jwt or to get a session's information. Instead having everything cleanly separated in an auth service makes it easier to be high availability and reduces the scope that might impact the available of the service.
-
-### Logic on the gateway
-
-We do need to add logic to the gateway for phantom tokens to work but this isn't as niche as it sounds. For example [k8s'gateway api added support for it recently ](see https://github.com/kubernetes-sigs/gateway-api/pull/4001) and a lot of gateways support it natively.
-
-- [ ] cilium: https://github.com/cilium/cilium#23797
-- [x] envoy gateway: https://github.com/cilium/cilium#23797
-- [x] traefik: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/
-- [ ] add other proxy to this list by contributing! I was too lazy to find more references
-
-### Long lived flows or websockets
-
-Some flows might outlive the duration of the temporary jwt created by the gateway. One such example is websockets, you can create a jwt and ensure the user has the permissions to create a jwt by handling the first request (the one that will return 101 switching protocol) but if you send a message in your websocket 5 hours later your jwt will have expired.
-
-I couldn't find a silver lining solution for this, the best i came up with for kyoo is to consider the websocket handler as another gateway and refresh the jwt on each new message (excluding keep-alive/pings). If you're interested here's the implementation PR: https://github.com/zoriya/Kyoo/pull/1491.
 
 ## Afterword
 
